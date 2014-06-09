@@ -2,7 +2,6 @@ var GameObject = (function () {
     'use strict';
     var planeWidth = 20,
     // when moving, the direction will change 1 pixel at the time
-    //GIT SETTINGS
         PLAYER_DIRECTION_DELTA = 1,
     // Enumeration with the different bulletTypes
         BulletTypes = {
