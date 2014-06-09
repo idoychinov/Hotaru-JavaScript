@@ -2,7 +2,7 @@ var GameObject = (function () {
     'use strict';
     var planeWidth = 20,
     // when moving, the direction will change 1 pixel at the time
-        PLAYER_DIRECTION_DELTA = 1,
+        DIRECTION_DELTA = 1,
     // Enumeration with the different bulletTypes
         BulletTypes = {
             classic: {model: 'classic.png', speed: 10, damage: 15},
@@ -29,16 +29,19 @@ var GameObject = (function () {
 
         this.move = function (moveDirection) {
             if (moveDirection === 'left') {
-                this.x -= PLAYER_DIRECTION_DELTA;
+                this.x -= DIRECTION_DELTA;
             } else if (moveDirection === 'right') {
-                this.x += PLAYER_DIRECTION_DELTA;
+                this.x += DIRECTION_DELTA;
             } else if (moveDirection === 'up') {
-                this.y -= PLAYER_DIRECTION_DELTA;
+                this.y -= DIRECTION_DELTA;
             } else {
-                this.y += PLAYER_DIRECTION_DELTA;
+                this.y += DIRECTION_DELTA;
             }
         };
     }
+
+   //function Plane(x, y, model, speed) {
+   //}
 
     function Bullet(x, y, bulletType, direction) {
         MovingObject.call(this, x, y, bulletType.model, bulletType.speed);
