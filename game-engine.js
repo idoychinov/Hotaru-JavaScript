@@ -6,11 +6,12 @@ var GameEngine = (function () {
     var bullets = [],
         i,
     // FOR testing only, will be fixed after
-        plane = new GameObject.MovingObject(100, 100, 'model', 1);
+        //plane = new GameObject.MovingObject(100, 100, 'model', 1);
+        playerPlane = new GameObject.MovingObject(100, 100, 'model', 1);
 
-    function updatePlanePosition(plane, direction) {
-        plane.move(direction);
-    }
+    //function updatePlanePosition(plane, direction) {
+    //    plane.move(direction);
+    //}
 
     document.body.addEventListener("keydown", function (e) {
         if (!e) {
@@ -23,19 +24,23 @@ var GameEngine = (function () {
                 // left
                 break;
             case 37:
-                updatePlanePosition(player, 'left')
+                playerPlane.move('left');
+                //updatePlanePosition(player, 'left')
                 break;
-            // up
+                // up
             case 38:
-                updatePlanePosition(player, 'up')
+                playerPlane.move('up');
+                //updatePlanePosition(player, 'up')
                 break;
-            // right
+                // right
             case 39:
-                updatePlanePosition(player, 'right')
+                playerPlane.move('right');
+                //updatePlanePosition(player, 'right')
                 break;
-            // down
+                // down
             case 40:
-                updatePlanePosition(player, 'down')
+                playerPlane.move('down');
+                //updatePlanePosition(player, 'down')
                 break;
         }
     });
