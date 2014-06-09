@@ -12,8 +12,6 @@ var GameObject = (function () {
         this.model = model;
     }
 
-    // TODO DA PITAM DONCHO ZA KAZUSA
-
     function MovingObject(x, y, model, speed) {
         GameObject.call(this, x, y, model);
         this.speed = speed;
