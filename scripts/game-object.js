@@ -5,7 +5,7 @@ var GameObject = (function () {
     'use strict';
     var planeWidth = 20,
     // when moving, the direction will change 1 pixel at the time
-        DIRECTION_DELTA = 15,
+        DIRECTION_DELTA = 1,
         testPlaneImg = new Image(),
     // Enumeration with the different bulletTypes
         bulletTypes = {
