@@ -4,10 +4,10 @@
 var GameEngine = (function () {
     'use strict';
     var bullets = [],
-        i,
+        i;
     // FOR testing only, will be fixed after
         //plane = new GameObject.MovingObject(100, 100, 'model', 1);
-        playerPlane = new GameObject.MovingObject(100, 100, 'model', 1);
+        //playerPlane = new GameObject.Plane(100, 100, 'model', 1);
 
     //function updatePlanePosition(plane, direction) {
     //    plane.move(direction);

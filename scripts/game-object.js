@@ -1,12 +1,20 @@
+/*global Kinetic, GameObject, playerModule*/
+/*jslint plusplus: true */
+/*jslint browser:true */
 var GameObject = (function () {
     'use strict';
     var planeWidth = 20,
     // when moving, the direction will change 1 pixel at the time
         DIRECTION_DELTA = 1,
     // Enumeration with the different bulletTypes
-        BulletTypes = {
+        bulletTypes = {
             classic: {model: 'classic.png', speed: 10, damage: 15},
             advanced: {model: 'classic.png', speed: 10, damage: 15}
+        },
+        planeTypes = {
+            T50: {model: 'T50.png', speed: 5, bulletType: 'classic'},
+            F16: {model: 'F16.png', speed: 5, bulletType: 'classic'}
+
         };
 
     function GameObject(x, y, model) {
@@ -14,19 +22,24 @@ var GameObject = (function () {
         this.x = x;
         this.y = y;
         this.model = model;
+        this.isAlive = true;
     }
 
-    //TODO MovingObject is using Bullet and vice versa
+    function Bullet(x, y, bulletType, direction) {
+        GameObject.call(this, x, y, bulletType.model);
+        this.speed = bulletType.speed;
+        this.damage = bulletType.damage;
+        this.direction = direction;
+        this.hasHitAPlane = false;
+    }
 
-    function MovingObject(x, y, model, speed) {
+    function Unit(x, y, model, speed) {
         GameObject.call(this, x, y, model);
         this.speed = speed;
-
         this.generateBullet = function (bulletType) {
-            var currentBullet = BulletTypes.bulletType;
+            var currentBullet = bulletTypes.bulletType;
             return new Bullet(this.x + planeWidth / 2, this.y + 10, currentBullet); //TODO DELTA Y FOR THE BULLET
         };
-
         this.move = function (moveDirection) {
             if (moveDirection === 'left') {
                 this.x -= DIRECTION_DELTA;
@@ -40,22 +53,17 @@ var GameObject = (function () {
         };
     }
 
-   //function Plane(x, y, model, speed) {
-   //}
-
-    function Bullet(x, y, bulletType, direction) {
-        MovingObject.call(this, x, y, bulletType.model, bulletType.speed);
-        this.damage = bulletType.damage;
-        this.direction = direction;
-        this.hasHitAPlane = false;
+    function Plane(x, y, planeType) {
+        Unit.call(this, x, y, planeType.model, planeType.speed);
+        this.bulletType = planeType.bulletType;
     }
 
     function test() {
-        var obj = new MovingObject(1, 1, "&");
-        console.log(obj.x + ' ' + obj.y);
-        console.log(obj.getName());
+        //var player = new Player.Player();
+        var player = new
+        var plane = new Plane(1,1, planeTypes.T50);
+        console.log(plane.getName());
     }
-
 
     Object.prototype.getName = function () {
         var funcNameRegex = /function (.{1,})\(/,
@@ -63,8 +71,8 @@ var GameObject = (function () {
         return (results && results.length > 1) ? results[1] : "";
     };
 
-
     return {
-        test: test
+        test: test,
+        planesEnum: planeTypes
     };
 }());
