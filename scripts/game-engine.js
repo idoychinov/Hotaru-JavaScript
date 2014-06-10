@@ -4,6 +4,7 @@
 var GameEngine = (function () {
     'use strict';
     var bullets = [],
+        enemyPlanes = [],
         i;
     // FOR testing only, will be fixed after
     //plane = new GameObject.MovingObject(100, 100, 'model', 1);
