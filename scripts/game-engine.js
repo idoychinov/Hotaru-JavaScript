@@ -10,7 +10,8 @@ var GameEngine = (function () {
         PLANE_MODEL_HEIGHT = 20, //TODO Have to be changed with variable according to the height of the specific plane image
         PLANE_MODEL_WIDTH = 20,
         BULLET_MODEL_HEIGHT = 40,
-        BULLET_MODEL_WIDTH = 10;
+        BULLET_MODEL_WIDTH = 10,
+        player;
 
     // FOR testing only, will be fixed after
     //plane = new GameObject.MovingObject(100, 100, 'model', 1);
@@ -85,7 +86,7 @@ var GameEngine = (function () {
         }
     }
 
-    function checkEnemyHit() {
+    function checkForBulletHit() {
         var bulletListLength = bullets.length,
             currentBullet,
             enemyPlanesListLength = enemyPlanes.lenth,
@@ -108,12 +109,24 @@ var GameEngine = (function () {
                     }
                 }
             }
+            else {
+                if (currentBullet.direction === 'down') {
+                    if (currentBullet.y + BULLET_MODEL_HEIGHT >= player.y &&
+                        currentBullet.x + BULLET_MODEL_WIDTH >= player.x &&
+                        currentBullet.x <= player.x + PLANE_MODEL_WIDTH) {
+                        bullets.splice(i, 1);
+                        i--;
+                        bulletListLength = bullets.length;
+                        player.plane.isAlive = false; //TODO Maybe has to be changed with other game logic
+                    }
+                }
+            }
         }
     }
 
     function init() {
-        var playerPlane = new GameObject.Plane(100, 100, GameObject.planesEnum.T50),
-            player = new playerModule.Player("Stamat", playerPlane);
+        var playerPlane = new GameObject.Plane(100, 100, GameObject.planesEnum.T50);
+        player = new playerModule.Player("Stamat", playerPlane);
         console.log(playerPlane.model);
         console.log(player.name + " " + player.plane.getName());
         renderer.enqueueForRendering(player.plane);
