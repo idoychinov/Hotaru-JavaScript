@@ -20,7 +20,17 @@ var GameEngine = (function () {
     //function updatePlanePosition(plane, direction) {
     //    plane.move(direction);
     //}
-
+        
+    var handle,
+        down = false;
+    
+    function performMovement(direction) {
+        if (!down) {
+            down = true;
+            handle = setInterval(function() { player.plane.move(direction); }, 5);
+        }
+    }
+    
     document.body.addEventListener("keydown", function (e) {
         if (!e) {
             e = window.event;
@@ -29,19 +39,28 @@ var GameEngine = (function () {
             //Space -> pausing the game
             case 32:
                 //isPaused = !isPaused;
-                // left
+                //left
                 break;
             case 37:
-                player.plane.move('left');
+                performMovement('left');
                 break;
             case 38:
-                player.plane.move('up');
+                performMovement('up');
                 break;
             case 39:
-                player.plane.move('right');
+                performMovement('right');
                 break;
             case 40:
-                player.plane.move('down');
+                performMovement('down');
+                break;
+        }
+    });
+    
+    document.body.addEventListener("keyup", function(e) {
+        switch (e.keyCode) {
+            case 37: case 38: case 39: case 40:          
+                clearInterval(handle);
+                down = false;
                 break;
         }
     });
