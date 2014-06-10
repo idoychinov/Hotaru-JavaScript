@@ -7,7 +7,10 @@ var GameEngine = (function () {
         enemyPlanes = [],
         i,
         j,
-        PLANE_MODEL_HEIGHT = 20; //TODO Has to be changed with variable according to the height of the specific plane image
+        PLANE_MODEL_HEIGHT = 20, //TODO Have to be changed with variable according to the height of the specific plane image
+        PLANE_MODEL_WIDTH = 20,
+        BULLET_MODEL_HEIGHT = 40,
+        BULLET_MODEL_WIDTH = 10;
 
     // FOR testing only, will be fixed after
     //plane = new GameObject.MovingObject(100, 100, 'model', 1);
@@ -93,7 +96,9 @@ var GameEngine = (function () {
             if (currentBullet.direction === 'up') {
                 for (j = 0; j < enemyPlanesListLength; j++) {
                     currentEnemyPlane = arguments[j];
-                    if (currentBullet.y <= currentEnemyPlane.y + PLANE_MODEL_HEIGHT) {
+                    if (currentBullet.y <= currentEnemyPlane.y + PLANE_MODEL_HEIGHT &&
+                        currentBullet.x + BULLET_MODEL_WIDTH >= currentEnemyPlane.x &&
+                        currentBullet.x <= currentEnemyPlane.x + PLANE_MODEL_WIDTH) {
                         bullets.splice(i, 1);
                         i--;
                         bulletListLength = bullets.length;
