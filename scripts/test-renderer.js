@@ -1,6 +1,6 @@
 ﻿/*global Kinetic, GameObject, playerModule */
 /*jslint plusplus: true */
-/*jslint browser:true */
+/*test plusplus: false */
 var stage = new Kinetic.Stage({
     container: "field",
     width: 480,
