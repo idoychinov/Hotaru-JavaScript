@@ -62,6 +62,8 @@ var GameEngine = (function () {
 
     }
 
+    // Checks for every bullet it's position and if it's outside the canvas
+    // It deletes it
     function updateBullets() {
         var bulletListLength = bullets.length,
             currentBullet;
@@ -84,6 +86,8 @@ var GameEngine = (function () {
                 }
             }
         }
+
+        return bullets;
     }
 
     function checkForBulletHit() {
@@ -125,24 +129,43 @@ var GameEngine = (function () {
         }
     }
 
-    var enemyCount = enemyPlanes.length;
-    for (var i = 0; i < enemyCount; i++) {
-        var enemy = renderer[i];
-        enemy.x = Math.random()
-    }
+    // Moving all of the enemy units. At this time only planes
+    function moveEnemyUnits() {
+        var enemiesLength = enemyPlanes.length,
+            random,
+            unit = new GameObject.Plane(0, 0);
 
-    function moveEnemyUnit(unit) {
-        var random = math.random();
-        if (random < 0.25) {
-            unit.x -= 1;
-        } else if (random < 0.50) {
-            unit.x -= 1;
-            unit.y += 1;
-        } else if (random < 0.75) {
-            unit.x += 1;
-            unit.y += 1;
-        } else {
-            unit.x += 1;
+        for (i = 0; i < enemiesLength; i++) {
+            unit = enemyPlanes[i];
+            random = Math.random();
+            if (unit.isAlive === false) {
+                enemyPlanes.splice(i, 1);
+                i--;
+                enemiesLength--;
+            } else {
+                //Update position
+                if (random < 0.20) {
+                    unit.x -= 1;
+                } else if (random < 0.30) {
+                    unit.x -= 1;
+                    unit.y += 1;
+                } else if (random < 0.40) {
+                    unit.x += 1;
+                    unit.y += 1;
+                }
+                if (random < 0.80) {
+                    unit.y += 1;
+                } else {
+                    unit.x += 1;
+                }
+
+                //Check if still in canvas
+                if (unit.y < 0 || unit.x < -unit.model.width || unit.y > canvas.height + unit.model.height || unit.x > canvas.width) {
+                    enemyPlanes.splice(i, 1);
+                    i--;
+                    enemiesLength--;
+                }
+            }
         }
     }
 
@@ -153,6 +176,11 @@ var GameEngine = (function () {
         console.log(player.name + " " + player.plane.getName());
         renderer.enqueueForRendering(player.plane);
         renderer.init();
+    }
+
+    // Game logic
+    function gameLoop() {
+
     }
 
     return {
