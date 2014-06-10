@@ -35,17 +35,17 @@ var GameEngine = (function () {
                 playerPlane.move('left');
                 //updatePlanePosition(player, 'left')
                 break;
-                // up
+            // up
             case 38:
                 playerPlane.move('up');
                 //updatePlanePosition(player, 'up')
                 break;
-                // right
+            // right
             case 39:
                 playerPlane.move('right');
                 //updatePlanePosition(player, 'right')
                 break;
-                // down
+            // down
             case 40:
                 playerPlane.move('down');
                 //updatePlanePosition(player, 'down')
@@ -110,8 +110,7 @@ var GameEngine = (function () {
                         // TODO LOGIC FOR EXPLOSION
                     }
                 }
-            }
-            else {
+            } else {
                 if (currentBullet.direction === 'down') {
                     if (currentBullet.y + BULLET_MODEL_HEIGHT >= player.y &&
                         currentBullet.x + BULLET_MODEL_WIDTH >= player.x &&
@@ -125,17 +124,6 @@ var GameEngine = (function () {
             }
         }
     }
-
-    function init() {
-        var playerPlane = new GameObject.Plane(100, 100, GameObject.planesEnum.T50);
-        player = new playerModule.Player("Stamat", playerPlane);
-        console.log(playerPlane.model);
-        console.log(player.name + " " + player.plane.getName());
-        renderer.enqueueForRendering(player.plane);
-        renderer.init();
-    }
-
-
 
     var enemyCount = enemyPlanes.length;
     for (var i = 0; i < enemyCount; i++) {
@@ -156,6 +144,15 @@ var GameEngine = (function () {
         } else {
             unit.x += 1;
         }
+    }
+
+    function init() {
+        var playerPlane = new GameObject.Plane(100, 100, GameObject.planesEnum.T50);
+        player = new playerModule.Player("Stamat", playerPlane);
+        console.log(playerPlane.model);
+        console.log(player.name + " " + player.plane.getName());
+        renderer.enqueueForRendering(player.plane);
+        renderer.init();
     }
 
     return {
