@@ -1,4 +1,4 @@
-/*global Kinetic, GameObject, playerModule, renderer */
+/*global Kinetic, GameObject, playerModule, animationManager */
 /*jslint plusplus: true */
 /*jslint browser:true */
 var GameEngine = (function () {
@@ -32,23 +32,16 @@ var GameEngine = (function () {
                 // left
                 break;
             case 37:
-                playerPlane.move('left');
-                //updatePlanePosition(player, 'left')
+                player.plane.move('left');
                 break;
-            // up
             case 38:
-                playerPlane.move('up');
-                //updatePlanePosition(player, 'up')
+                player.plane.move('up');
                 break;
-            // right
             case 39:
-                playerPlane.move('right');
-                //updatePlanePosition(player, 'right')
+                player.plane.move('right');
                 break;
-            // down
             case 40:
-                playerPlane.move('down');
-                //updatePlanePosition(player, 'down')
+                player.plane.move('down');
                 break;
         }
     });
@@ -169,13 +162,14 @@ var GameEngine = (function () {
         }
     }
 
+    function getPlayer(){
+        return player;
+    }
+
     function init() {
         var playerPlane = new GameObject.Plane(100, 100, GameObject.planesEnum.T50);
         player = new playerModule.Player("Stamat", playerPlane);
-        console.log(playerPlane.model);
-        console.log(player.name + " " + player.plane.getName());
-        renderer.enqueueForRendering(player.plane);
-        renderer.init();
+        animationManager.init();
     }
 
     // Game logic
@@ -184,6 +178,7 @@ var GameEngine = (function () {
     }
 
     return {
-        init: init
+        init: init,
+        getPlayer: getPlayer
     };
 }());

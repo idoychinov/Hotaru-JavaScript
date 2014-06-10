@@ -1,42 +1,38 @@
-﻿/*global Kinetic, GameObject, playerModule */
+﻿/*global Kinetic, GameEngine, GameObject, playerModule */
 /*jslint plusplus: true */
 /*jslint browser:true */
-var stage = new Kinetic.Stage({
-    container: "field",
-    width: 480,
-    height: 640
-});
-
-var layer = new Kinetic.Layer();
-
-var rect = new Kinetic.Rect({
-    x: 239,
-    y: 75,
-    width: 100,
-    height: 50,
-    fill: 'green',
-    stroke: 'black',
-    strokeWidth: 4
-});
-
-layer.add(rect);
-stage.add(layer);
+var animationManager = (function () {
 
 
+    var canvas = document.getElementById('canvas'),
+        ctx = canvas.getContext('2d'),
+        animFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+
+    function drawPlane(plane) {
+        ctx.drawImage(plane.model, plane.x, plane.y, 50, 74)
+    }
 
 
-/*
-function draw(gameObject) {
-    img = new Image();
-    img.src = gameObject.module;
-    ctx.clearRect(0, 0, ctxWidth, ctxHeight);
-    ctx.drawImage(img, 0, 0);
-}
+    function animLoop() {
 
-function drawFrame() {
-    draw(playerAircraft);
-    window.requestAnimationFrame(drawFrame);
-}
+        ctx.fillStyle = "#001000";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        //ctx.font = "18px Arial";
+        //ctx.fillStyle = "red";
+        //displayMessage = 'Score : ' + score.toString() + ", Level : " + level;
+        //ctx.fillText(displayMessage, 10, canvas.height - 10);
+        var player = GameEngine.getPlayer();
+        drawPlane(player.plane);
+        alert('f');
+        animFrame(animLoop);
 
-drawFrame();
-*/
+    }
+
+    function init() {
+        animFrame(animLoop);
+    }
+
+    return {
+        init: init
+    };
+}());
