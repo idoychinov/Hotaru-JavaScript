@@ -1,4 +1,4 @@
-/*global Kinetic, GameObject */
+/*global Kinetic, GameObject, playerModule */
 /*jslint plusplus: true */
 /*jslint browser:true */
 var GameEngine = (function () {
@@ -6,8 +6,8 @@ var GameEngine = (function () {
     var bullets = [],
         i;
     // FOR testing only, will be fixed after
-        //plane = new GameObject.MovingObject(100, 100, 'model', 1);
-        //playerPlane = new GameObject.Plane(100, 100, 'model', 1);
+    //plane = new GameObject.MovingObject(100, 100, 'model', 1);
+    //playerPlane = new GameObject.Plane(100, 100, 'model', 1);
 
     //function updatePlanePosition(plane, direction) {
     //    plane.move(direction);
@@ -27,23 +27,32 @@ var GameEngine = (function () {
                 playerPlane.move('left');
                 //updatePlanePosition(player, 'left')
                 break;
-                // up
+            // up
             case 38:
                 playerPlane.move('up');
                 //updatePlanePosition(player, 'up')
                 break;
-                // right
+            // right
             case 39:
                 playerPlane.move('right');
                 //updatePlanePosition(player, 'right')
                 break;
-                // down
+            // down
             case 40:
                 playerPlane.move('down');
                 //updatePlanePosition(player, 'down')
                 break;
         }
     });
+
+    function generateUnit(unitType, unitModel, x, y) {
+        if (unitType === 'plane') {
+            return new GameObject.Plane(x, y, unitModel);
+        }
+
+        throw new Error('Unknown unit type');
+
+    }
 
     function updateBullets() {
         var bulletListLength = bullets.length,
@@ -69,5 +78,15 @@ var GameEngine = (function () {
         }
     }
 
+    function init() {
+        var playerPlane = new GameObject.Plane(100, 100, GameObject.planesEnum.T50),
+            player = new playerModule.Player("Stamat", playerPlane);
+        console.log(playerPlane.model);
+        console.log(player.name + " " + player.plane.getName());
+    }
 
+
+    return {
+        init: init
+    };
 }());
