@@ -107,8 +107,8 @@ var renderer = (function () {
         for (var i = 0; i < elementsToRender.length; i++) {
             var obj = elementsToRender[i];
             var rect = new Kinetic.Rect({
-                x: obj.x+5,
-                y: obj.y+5,
+                x: obj.x + 5,
+                y: obj.y + 5,
                 width: 100,
                 height: 50,
                 fill: 'green',
