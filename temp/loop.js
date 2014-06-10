@@ -61,11 +61,10 @@ function GameCycleManager(loops, stage) {
     this.transition;
     this.patternImg;
     this.transitionImg;
-    this.layer = new Kinetic.Layer();
+    this.backgroundLayer = new Kinetic.Layer();
+    this.elementsLayer = new Kinetic.Layer();
     
-    this.newLayer = new Kinetic.Layer();
     this.elements = [];
-    
     
     // Initializing the field
     this.initializeFields();
@@ -87,19 +86,19 @@ GameCycleManager.prototype.initializeFields = function() {
     this.transition = this.generatePatternContainer(this.transitionImg, -FIELD_HEIGHT);
     
     // Adding fields to the main layer
-    this.layer.add(this.pattern);
-    this.layer.add(this.transition);
+    this.backgroundLayer.add(this.pattern);
+    this.backgroundLayer.add(this.transition);
 };
 
 GameCycleManager.prototype.drawStage = function() {
-    this.stage.add(this.layer);
-    this.stage.add(this.newLayer);
+    this.stage.add(this.backgroundLayer);
+    this.stage.add(this.elementsLayer);
 };
 
 GameCycleManager.prototype.addElement = function(element) {
     this.elements.push(element);
     
-    this.newLayer.add(this.elements[this.elements.length - 1]);
+    this.backgroundLayer.add(this.elements[this.elements.length - 1]);
 };
 
 GameCycleManager.prototype.generatePatternContainer = function(image, startPos) {    
@@ -174,13 +173,12 @@ GameCycleManager.prototype.startMovement = function() {
     
     // External elements
     for (var i = 0; i < this.elements.length; i++) {
-            var newPos = this.elements[i].attrs.y + 0.5;
+        var newPos = this.elements[i].attrs.y + 0.5;
         this.elements[i].setY(newPos);
     }
 
-    
-    this.layer.batchDraw();
-    this.newLayer.batchDraw();
+    this.backgroundLayer.batchDraw();
+    this.elementsLayer.batchDraw();
     
     var self = this;
     setTimeout(function() { self.startMovement(); }, this.LOOP_SPEED);
@@ -205,42 +203,41 @@ var loops = [
 ];
 
 
-    var rect1 = new Kinetic.Rect({
-        x: 0,
-        y: 10,
-        width: 100,
-        height: 100,
-        fill: "red"
-    });
-    
-        var rect2 = new Kinetic.Rect({
-        x: 0,
-        y: 200,
-        width: 100,
-        height: 100,
-        fill: "green"
-    });
-    
-        var rect3 = new Kinetic.Rect({
-        x: 200,
-        y: 16,
-        width: 100,
-        height: 100,
-        fill: "blue"
-    });
-    
-        var rect4 = new Kinetic.Rect({
-        x: 100,
-        y: 10,
-        width: 100,
-        height: 100,
-        fill: "yellow"
-    });
+var rect1 = new Kinetic.Rect({
+    x: 0,
+    y: 10,
+    width: 100,
+    height: 100,
+    fill: "red"
+});
+
+    var rect2 = new Kinetic.Rect({
+    x: 0,
+    y: 200,
+    width: 100,
+    height: 100,
+    fill: "green"
+});
+
+    var rect3 = new Kinetic.Rect({
+    x: 200,
+    y: 16,
+    width: 100,
+    height: 100,
+    fill: "blue"
+});
+
+    var rect4 = new Kinetic.Rect({
+    x: 100,
+    y: 10,
+    width: 100,
+    height: 100,
+    fill: "yellow"
+});
 
 try {
     var playingField = new GameCycleManager(loops, stage);
 
-    
     playingField.addElement(rect1);
     playingField.addElement(rect2);
     playingField.addElement(rect3);
