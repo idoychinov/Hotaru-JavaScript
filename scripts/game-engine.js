@@ -5,7 +5,9 @@ var GameEngine = (function () {
     'use strict';
     var bullets = [],
         enemyPlanes = [],
-        i;
+        i,
+        PLANE_MODEL_HEIGHT = 20; //TODO Has to be changed with variable according to the height of the specific plane image
+
     // FOR testing only, will be fixed after
     //plane = new GameObject.MovingObject(100, 100, 'model', 1);
     //playerPlane = new GameObject.Plane(100, 100, 'model', 1);
@@ -28,17 +30,17 @@ var GameEngine = (function () {
                 playerPlane.move('left');
                 //updatePlanePosition(player, 'left')
                 break;
-            // up
+                // up
             case 38:
                 playerPlane.move('up');
                 //updatePlanePosition(player, 'up')
                 break;
-            // right
+                // right
             case 39:
                 playerPlane.move('right');
                 //updatePlanePosition(player, 'right')
                 break;
-            // down
+                // down
             case 40:
                 playerPlane.move('down');
                 //updatePlanePosition(player, 'down')
@@ -74,6 +76,30 @@ var GameEngine = (function () {
                     currentBullet.y += 1;
                 } else {
                     throw new Error('Problem with the bullet direction');
+                }
+            }
+        }
+    }
+
+    function checkEnemyHit() {
+        var bulletListLength = bullets.length,
+            currentBullet,
+            enemyPlanesListLength = enemyPlanes.lenth,
+            currentEnemyPlane;
+
+        for (i = 0; i < bulletListLength; i++) {
+            currentBullet = arguments[i];
+            if (currentBullet.direction === 'up') {
+                for (j = 0; j < enemyPlanesListLength; j++) {
+                    currentEnemyPlane = arguments[j];
+                    if (currentBullet.y <= currentEnemyPlane.y + PLANE_MODEL_HEIGHT) {
+                        i--;
+                        bullets.splice(i, 1);
+                        bulletListLength = bullets.length;
+                        j--;
+                        enemyPlanes.splice(j, 1);
+                        enemyPlanesListLength = enemyPlanes.length;
+                    }
                 }
             }
         }
