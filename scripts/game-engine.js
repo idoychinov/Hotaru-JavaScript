@@ -1,4 +1,4 @@
-/*global Kinetic, GameObject, playerModule */
+/*global Kinetic, GameObject, playerModule, renderer */
 /*jslint plusplus: true */
 /*jslint browser:true */
 var GameEngine = (function () {
@@ -110,6 +110,8 @@ var GameEngine = (function () {
             player = new playerModule.Player("Stamat", playerPlane);
         console.log(playerPlane.model);
         console.log(player.name + " " + player.plane.getName());
+        renderer.enqueueForRendering(player.plane);
+        renderer.init();
     }
 
 

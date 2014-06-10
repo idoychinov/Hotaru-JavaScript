@@ -1,9 +1,31 @@
-﻿var canvas = document.getElementById('canvas'),
-	ctx = canvas.getContext('2d'),
-	ctxWidth = canvas.width,
-	ctxHeight = canvas.height,
-	playerAircraft = //to add;
+﻿/*global Kinetic, GameObject, playerModule */
+/*jslint plusplus: true */
+/*jslint browser:true */
+var stage = new Kinetic.Stage({
+    container: "field",
+    width: 480,
+    height: 640
+});
 
+var layer = new Kinetic.Layer();
+
+var rect = new Kinetic.Rect({
+    x: 239,
+    y: 75,
+    width: 100,
+    height: 50,
+    fill: 'green',
+    stroke: 'black',
+    strokeWidth: 4
+});
+
+layer.add(rect);
+stage.add(layer);
+
+
+
+
+/*
 function draw(gameObject) {
     img = new Image();
     img.src = gameObject.module;
@@ -17,3 +39,4 @@ function drawFrame() {
 }
 
 drawFrame();
+*/
