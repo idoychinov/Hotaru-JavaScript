@@ -106,6 +106,8 @@ var GameEngine = (function () {
                         enemyPlanes.splice(j, 1);
                         j--;
                         enemyPlanesListLength = enemyPlanes.length;
+
+                        // TODO LOGIC FOR EXPLOSION
                     }
                 }
             }
@@ -133,6 +135,28 @@ var GameEngine = (function () {
         renderer.init();
     }
 
+
+
+    var enemyCount = enemyPlanes.length;
+    for (var i = 0; i < enemyCount; i++) {
+        var enemy = renderer[i];
+        enemy.x = Math.random()
+    }
+
+    function moveEnemyUnit(unit) {
+        var random = math.random();
+        if (random < 0.25) {
+            unit.x -= 1;
+        } else if (random < 0.50) {
+            unit.x -= 1;
+            unit.y += 1;
+        } else if (random < 0.75) {
+            unit.x += 1;
+            unit.y += 1;
+        } else {
+            unit.x += 1;
+        }
+    }
 
     return {
         init: init
