@@ -160,7 +160,7 @@ var GameEngine = (function () {
                 }
 
                 //Check if still in canvas
-                if (unit.y < 0 || unit.x < -unit.model.width || unit.y > canvas.height + unit.model.height || unit.x > canvas.width) {
+                if (unit.y < -unit.model.height || unit.x < -unit.model.width || unit.y > canvas.height || unit.x > canvas.width) {
                     enemyPlanes.splice(i, 1);
                     i--;
                     enemiesLength--;
