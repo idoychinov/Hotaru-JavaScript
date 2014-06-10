@@ -6,6 +6,7 @@ var GameEngine = (function () {
     var bullets = [],
         enemyPlanes = [],
         i,
+        j,
         PLANE_MODEL_HEIGHT = 20; //TODO Has to be changed with variable according to the height of the specific plane image
 
     // FOR testing only, will be fixed after
@@ -65,8 +66,8 @@ var GameEngine = (function () {
             currentBullet = arguments[i];
             // Test if the bullet is inside the canvas
             if (currentBullet.y < -currentBullet.model.height || currentBullet.y > canvas.height || currentBullet.hasHitAPlane) {
-                i--;
                 bullets.splice(i, 1);
+                i--;
                 bulletListLength = bullets.length;
             } else {
                 // If the bullet is inside we are changing it's position
@@ -93,11 +94,11 @@ var GameEngine = (function () {
                 for (j = 0; j < enemyPlanesListLength; j++) {
                     currentEnemyPlane = arguments[j];
                     if (currentBullet.y <= currentEnemyPlane.y + PLANE_MODEL_HEIGHT) {
-                        i--;
                         bullets.splice(i, 1);
+                        i--;
                         bulletListLength = bullets.length;
-                        j--;
                         enemyPlanes.splice(j, 1);
+                        j--;
                         enemyPlanesListLength = enemyPlanes.length;
                     }
                 }
