@@ -53,16 +53,9 @@ var GameObject = (function () {
         };
     }
 
-    function Plane(x, y, planeType) {
-        Unit.call(this, x, y, planeType.model, planeType.speed);
-        this.bulletType = planeType.bulletType;
-    }
-
-    function test() {
-        //var player = new Player.Player();
-        var player = new
-        var plane = new Plane(1,1, planeTypes.T50);
-        console.log(plane.getName());
+    function Plane(x, y, planeModel) {
+        Unit.call(this, x, y, planeModel.model, planeModel.speed);
+        this.bulletType = planeModel.bulletType;
     }
 
     Object.prototype.getName = function () {
@@ -72,7 +65,7 @@ var GameObject = (function () {
     };
 
     return {
-        test: test,
-        planesEnum: planeTypes
+        planesEnum: planeTypes,
+        Plane: Plane
     };
 }());

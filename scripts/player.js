@@ -3,8 +3,9 @@
 /*jslint browser:true */
 var playerModule = (function () {
     'use strict';
-    function Player() {
-        this.plane = new GameObject.Plane(1, 1, GameObject.planesEnum.T50);
+    function Player(name, plane) {
+        this.name = name;
+        this.plane = plane;
     }
 
     return {
