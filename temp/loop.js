@@ -33,9 +33,9 @@ KineticUtility.createImage = function(source, imageOptions) {
 /* } */
 
 
-/* class Loop { */
+/* class BackgroundLoop { */
 
-function Loop(pattern, transition, transitionCondition) {
+function BackgroundLoop(pattern, transition, transitionCondition) {
     this.patternSource = pattern;
     this.transitionSource = transition;
     this.transitionCondition = transitionCondition;
@@ -44,9 +44,9 @@ function Loop(pattern, transition, transitionCondition) {
 /* } */
 
 
-/* class LoopManager { */
+/* class GameCycleManager { */
 
-function LoopManager(loops, stage) {
+function GameCycleManager(loops, stage) {
     this.LOOP_SPEED = 10;
     
     this.isInTransition = false;
@@ -63,12 +63,15 @@ function LoopManager(loops, stage) {
     this.transitionImg;
     this.layer = new Kinetic.Layer();
     
+    this.newLayer = new Kinetic.Layer();
+    this.elements = [];
+    
+    
     // Initializing the field
     this.initializeFields();
-    this.drawStage(stage);
 }
 
-LoopManager.prototype.initializeFields = function() {
+GameCycleManager.prototype.initializeFields = function() {
     var initial = this.loops[0];
     var imageOptions = {
         x: 0,
@@ -88,11 +91,18 @@ LoopManager.prototype.initializeFields = function() {
     this.layer.add(this.transition);
 };
 
-LoopManager.prototype.drawStage = function(stage) {
-    stage.add(this.layer);
+GameCycleManager.prototype.drawStage = function() {
+    this.stage.add(this.layer);
+    this.stage.add(this.newLayer);
 };
 
-LoopManager.prototype.generatePatternContainer = function(image, startPos) {    
+GameCycleManager.prototype.addElement = function(element) {
+    this.elements.push(element);
+    
+    this.newLayer.add(this.elements[this.elements.length - 1]);
+};
+
+GameCycleManager.prototype.generatePatternContainer = function(image, startPos) {    
     return new Kinetic.Rect({
         x: 0,
         y: startPos,
@@ -103,7 +113,7 @@ LoopManager.prototype.generatePatternContainer = function(image, startPos) {
     });
 };
 
-LoopManager.prototype.executeLooping = function() {
+GameCycleManager.prototype.executeLooping = function() {
     var yOffset = this.pattern.attrs.fillPatternOffsetY - 1;
         
     // Resets the offset on loop
@@ -120,7 +130,7 @@ LoopManager.prototype.executeLooping = function() {
     this.pattern.fillPatternOffset({y: yOffset});
 };
 
-LoopManager.prototype.executeTransition = function() {
+GameCycleManager.prototype.executeTransition = function() {
     var patternY = this.pattern.attrs.y + 1,
         transitionY = this.transition.attrs.y + 1;
 
@@ -151,7 +161,8 @@ LoopManager.prototype.executeTransition = function() {
     }
 };
 
-LoopManager.prototype.startMovement = function() {    
+GameCycleManager.prototype.startMovement = function() {
+    // Background looper
     if (!this.isInTransition) {
         this.executeLooping();
     }
@@ -161,7 +172,15 @@ LoopManager.prototype.startMovement = function() {
         if (isLast) return;
     }
     
+    // External elements
+    for (var i = 0; i < this.elements.length; i++) {
+            var newPos = this.elements[i].attrs.y + 0.5;
+        this.elements[i].setY(newPos);
+    }
+
+    
     this.layer.batchDraw();
+    this.newLayer.batchDraw();
     
     var self = this;
     setTimeout(function() { self.startMovement(); }, this.LOOP_SPEED);
@@ -172,21 +191,62 @@ LoopManager.prototype.startMovement = function() {
 // PREVIEW
 
 var loops = [
-    new Loop("pattern.png", "transition.png",
+    new BackgroundLoop("pattern.png", "transition.png",
         function(loops) {
             if (loops == 2) return true; else return false;
         }
     ),
 
-    new Loop("pattern2.png", "transition2.png",
+    new BackgroundLoop("pattern2.png", "transition2.png",
         function(loops) {
             if (loops == 6) return true; else return false;
         }
     )
 ];
 
+
+    var rect1 = new Kinetic.Rect({
+        x: 0,
+        y: 10,
+        width: 100,
+        height: 100,
+        fill: "red"
+    });
+    
+        var rect2 = new Kinetic.Rect({
+        x: 0,
+        y: 200,
+        width: 100,
+        height: 100,
+        fill: "green"
+    });
+    
+        var rect3 = new Kinetic.Rect({
+        x: 200,
+        y: 16,
+        width: 100,
+        height: 100,
+        fill: "blue"
+    });
+    
+        var rect4 = new Kinetic.Rect({
+        x: 100,
+        y: 10,
+        width: 100,
+        height: 100,
+        fill: "yellow"
+    });
+
 try {
-    var playingField = new LoopManager(loops, stage);
+    var playingField = new GameCycleManager(loops, stage);
+
+    
+    playingField.addElement(rect1);
+    playingField.addElement(rect2);
+    playingField.addElement(rect3);
+    playingField.addElement(rect4);
+    
+    playingField.drawStage();
     playingField.startMovement();
 }
 catch(error) {
