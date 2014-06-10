@@ -23,7 +23,6 @@ var animationManager = (function () {
         //ctx.fillText(displayMessage, 10, canvas.height - 10);
         var player = GameEngine.getPlayer();
         drawPlane(player.plane);
-        alert('f');
         animFrame(animLoop);
 
     }
