@@ -7,6 +7,7 @@ var GameObject = (function () {
     // when moving, the direction will change 1 pixel at the time
         DIRECTION_DELTA = 1,
         sukhoi = new Image(), //142  / 98  / 98 /210
+        f16 = new Image(),
     // Enumeration with the different bulletTypes
         bulletTypes = {
             classic: {model: 'classic.png', speed: 10, damage: 15},
@@ -14,10 +15,11 @@ var GameObject = (function () {
         },
         planeTypes = {
             T50: {model: sukhoi, speed: 5, bulletType: 'classic'},
-            F16: {model: 'F16.png', speed: 5, bulletType: 'classic'}
+            F16: {model: f16, speed: 5, bulletType: 'classic'}
 
         };
         sukhoi.src = "scripts/sukhoi_sprite.png";
+        f16.src = "scripts/f16.png"
 
     function GameObject(x, y, model) {
         // X and Y -> top left pixel for the image

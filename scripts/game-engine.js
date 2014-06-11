@@ -20,28 +20,30 @@ var GameEngine = (function () {
     //function updatePlanePosition(plane, direction) {
     //    plane.move(direction);
     //}
-        
+
     var handle,
         down = false;
-    
+
     function performMovement(direction) {
         if (!down) {
             down = true;
-            handle = setInterval(function() {
+            handle = setInterval(function () {
                 player.plane.move(direction);
-                direction==='left'?player.plane.steeringDirection = 'left':direction==='right'?player.plane.steeringDirection = 'right':'neutral';
+                direction === 'left' ? player.plane.steeringDirection = 'left' : direction === 'right' ? player.plane.steeringDirection = 'right' : 'neutral';
             }, 5);
         }
     }
+
     document.body.addEventListener("keyup", function (e) {
         player.plane.steeringDirection = 'neutral';
     });
 
-        document.body.addEventListener("keydown", function (e) {
+    document.body.addEventListener("keydown", function (e) {
         if (!e) {
             e = window.event;
         }
-                switch (e.keyCode) {
+        switch (e.keyCode) {
+
             //Space -> pausing the game
             case 32:
                 //isPaused = !isPaused;
@@ -61,10 +63,13 @@ var GameEngine = (function () {
                 break;
         }
     });
-    
-    document.body.addEventListener("keyup", function(e) {
+
+    document.body.addEventListener("keyup", function (e) {
         switch (e.keyCode) {
-            case 37: case 38: case 39: case 40:          
+            case 37:
+            case 38:
+            case 39:
+            case 40:
                 clearInterval(handle);
                 down = false;
                 break;
@@ -187,13 +192,19 @@ var GameEngine = (function () {
         }
     }
 
-    function getPlayer(){
+    function getPlayer() {
         return player;
     }
 
+    function getEnemies() {
+        return enemyPlanes;
+    }
+
     function init() {
-        var playerPlane = new GameObject.Plane(100, 100, GameObject.planesEnum.T50);
+        var playerPlane = new GameObject.Plane(200, 200, GameObject.planesEnum.T50);
         player = new playerModule.Player("Stamat", playerPlane);
+        var testEnemy = new GameObject.Plane(0,0,GameObject.planesEnum.F16);
+        enemyPlanes.push(testEnemy);
         animationManager.init();
     }
 
@@ -204,6 +215,9 @@ var GameEngine = (function () {
 
     return {
         init: init,
-        getPlayer: getPlayer
+        getPlayer: getPlayer,
+        getEnemies: getEnemies,
+        moveEnemyUnits: moveEnemyUnits
+
     };
 }());
