@@ -206,32 +206,48 @@ var GameEngine = (function () {
     function moveEnemyUnits() {
         var enemiesLength = enemyPlanes.length,
             random,
+			movespeed = 2,
             unit;// = new GameObject.Plane(0, 0);
 
         for (i = 0; i < enemiesLength; i++) {
             unit = enemyPlanes[i];
+			
+			if(!unit.lastMove) {
+				unit.lastMove = 'right';
+			}
+			
             random = Math.random();
             if (unit.isAlive === false) {
                 enemyPlanes.splice(i, 1);
                 i--;
                 enemiesLength--;
             } else {
-                //Update position
-                if (random < 0.20) {
-                    unit.x -= 1;
-                } else if (random < 0.30) {
-                    unit.x -= 1;
-                    unit.y += 1;
-                } else if (random < 0.40) {
-                    unit.x += 1;
-                    unit.y += 1;
+				random = Math.random();
+                //Update position X
+                if (random < 0.5) {
+					random = Math.random();
+					// move on same direction if random < 0.98
+					if (random < 0.98) {
+						// move
+						if(unit.lastMove === 'left') {
+							unit.x -= movespeed;
+						} else {
+							unit.x += movespeed;
+						}
+					} else {
+						if(unit.lastMove === 'left') {
+							unit.x += movespeed;
+							unit.lastMove = 'right';
+						} else {
+							unit.x -= movespeed;
+							unit.lastMove = 'left';
+						}
+					}
                 }
-                if (random < 0.80) {
-                    unit.y += 1;
-                } else {
-                    unit.x += 1;
-                }
-
+				
+				//Update position Y
+				unit.y += 1;
+				
                 //Check if still in canvas
                 if (unit.y < -unit.model.height || unit.x < -unit.model.width || unit.y > canvas.height || unit.x > canvas.width) {
                     enemyPlanes.splice(i, 1);
