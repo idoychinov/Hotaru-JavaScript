@@ -8,11 +8,12 @@ var GameEngine = (function () {
         i,
         j,
         PLANE_MODEL_HEIGHT = 20, //TODO Have to be changed with variable according to the height of the specific plane image
-        PLANE_MODEL_WIDTH = 20,
+        PLANE_MODEL_WIDTH = 20, //TODO Have to be changed with variable according to the width of the specific plane image
         BULLET_MODEL_HEIGHT = 40,
         BULLET_MODEL_WIDTH = 10,
         player;
-
+	
+	
     // FOR testing only, will be fixed after
     //plane = new GameObject.MovingObject(100, 100, 'model', 1);
     //playerPlane = new GameObject.Plane(100, 100, 'model', 1);
