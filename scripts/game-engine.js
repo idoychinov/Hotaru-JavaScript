@@ -156,7 +156,7 @@ var GameEngine = (function () {
     function moveEnemyUnits() {
         var enemiesLength = enemyPlanes.length,
             random,
-            unit = new GameObject.Plane(0, 0);
+            unit;// = new GameObject.Plane(0, 0);
 
         for (i = 0; i < enemiesLength; i++) {
             unit = enemyPlanes[i];
