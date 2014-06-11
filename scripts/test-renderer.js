@@ -2,14 +2,20 @@
 /*jslint plusplus: true */
 /*jslint browser:true */
 var animationManager = (function () {
-
-
     var canvas = document.getElementById('canvas'),
         ctx = canvas.getContext('2d'),
         animFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
     function drawPlane(plane) {
-        ctx.drawImage(plane.model, plane.x, plane.y, 50, 74)
+        if (plane.steeringDirection == 'neutral') {
+            ctx.drawImage(plane.model,0,0,142, 210, plane.x, plane.y, 50, 74)
+        } else if (plane.steeringDirection == 'left') {
+            ctx.drawImage(plane.model,142,0,98, 210, plane.x, plane.y, 50, 74)
+        } else {
+            ctx.drawImage(plane.model,240,0,98, 210, plane.x, plane.y, 50, 74)
+        }
+
+
     }
 
 

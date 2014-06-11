@@ -27,15 +27,21 @@ var GameEngine = (function () {
     function performMovement(direction) {
         if (!down) {
             down = true;
-            handle = setInterval(function() { player.plane.move(direction); }, 5);
+            handle = setInterval(function() {
+                player.plane.move(direction);
+                direction==='left'?player.plane.steeringDirection = 'left':direction==='right'?player.plane.steeringDirection = 'right':'neutral';
+            }, 5);
         }
     }
-    
-    document.body.addEventListener("keydown", function (e) {
+    document.body.addEventListener("keyup", function (e) {
+        player.plane.steeringDirection = 'neutral';
+    });
+
+        document.body.addEventListener("keydown", function (e) {
         if (!e) {
             e = window.event;
         }
-        switch (e.keyCode) {
+                switch (e.keyCode) {
             //Space -> pausing the game
             case 32:
                 //isPaused = !isPaused;

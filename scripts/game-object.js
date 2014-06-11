@@ -6,18 +6,18 @@ var GameObject = (function () {
     var planeWidth = 20,
     // when moving, the direction will change 1 pixel at the time
         DIRECTION_DELTA = 1,
-        testPlaneImg = new Image(),
+        sukhoi = new Image(), //142  / 98  / 98 /210
     // Enumeration with the different bulletTypes
         bulletTypes = {
             classic: {model: 'classic.png', speed: 10, damage: 15},
             advanced: {model: 'classic.png', speed: 10, damage: 15}
         },
         planeTypes = {
-            T50: {model: testPlaneImg, speed: 5, bulletType: 'classic'},
+            T50: {model: sukhoi, speed: 5, bulletType: 'classic'},
             F16: {model: 'F16.png', speed: 5, bulletType: 'classic'}
 
         };
-        testPlaneImg.src = "scripts/sukhoi-top.png";
+        sukhoi.src = "scripts/sukhoi_sprite.png";
 
     function GameObject(x, y, model) {
         // X and Y -> top left pixel for the image
@@ -38,10 +38,12 @@ var GameObject = (function () {
     function Unit(x, y, model, speed) {
         GameObject.call(this, x, y, model);
         this.speed = speed;
-        this.generateBullet = function (bulletType) {
+        this.fireBullet = function (bulletType) {
             var currentBullet = bulletTypes.bulletType;
             return new Bullet(this.x + planeWidth / 2, this.y + 10, currentBullet); //TODO DELTA Y FOR THE BULLET
         };
+        // 3 steering directions - neutral, left, right
+        this.steeringDirection = 'neutral';
         this.move = function (moveDirection) {
             if (moveDirection === 'left') {
                 this.x -= DIRECTION_DELTA;
