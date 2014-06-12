@@ -13,7 +13,7 @@
 
         var paper = new joint.dia.Paper({
             el: $('#paper'),
-            width: 1000,
+            width: 1300,
             height: 800,
             gridSize: 1,
             model: graph
@@ -24,14 +24,14 @@
         var classes = {
 
             object: new uml.Abstract({
-                position: { x: 320, y: 10 },
-                size: { width: 200, height: 50 },
+                position: { x: 520, y: 10 },
+                size: { width: 200, height: 70 },
                 name: 'Object',
                 methods: ['+ prototype.getName() : String'],
             }),
 
             gameObject: new uml.Abstract({
-                position: { x: 300, y: 150 },
+                position: { x: 500, y: 150 },
                 size: { width: 240, height: 100 },
                 name: 'GameObject',
                 attributes: ['x : position X', 'y : position Y', 'model : model of object', 'isAline : is object alive'],
@@ -39,15 +39,22 @@
             }),
 
             bullet: new uml.Class ({
-                position: { x: 150, y: 350 },
+                position: { x: 350, y: 350 },
                 size: { width: 200, height: 100 },
                 name: 'Bullet',
                 attributes: ['speed : bullet speed', 'damage : bullet demage', 'direction : bulletn direction', 'hasHitAPlane : has it hit a target'],
                 methods: []
             }),
 
+            bulletEnum: new uml.State({
+                position: { x: 100, y: 350 },
+                size: { width: 150, height: 100 },
+                name: 'Bullet Types Enum',
+                events: ['Classic //', 'Advanced //']
+            }),
+
             unit: new uml.Class({
-                position: { x: 460, y: 350 },
+                position: { x: 660, y: 350 },
                 size: { width: 200, height: 100 },
                 name: 'Unit',
                 attributes: ['speed : unit speed', 'steeringDirection: direction of steering'],
@@ -55,11 +62,18 @@
             }),
 
             plane: new uml.Class({
-                position: { x: 460, y: 550 },
+                position: { x: 660, y: 550 },
                 size: { width: 200, height: 100 },
                 name: 'Plane',
                 attributes: ['bulletType : bulet type'],
                 methods: []
+            }),
+
+            planeEnum: new uml.State({
+                position: { x: 960, y: 550 },
+                size: { width: 200, height: 100 },
+                name: 'Plane Types Enum',
+                events: ['T50 //','F16 //']
             }),
            
         }
@@ -71,6 +85,9 @@
             new uml.Implementation({ source: { id: classes.bullet.id }, target: { id: classes.gameObject.id } }),
             new uml.Implementation({ source: { id: classes.unit.id }, target: { id: classes.gameObject.id } }),
             new uml.Implementation({ source: { id: classes.plane.id }, target: { id: classes.unit.id } }),
+            new uml.Aggregation({ source: { id: classes.plane.id }, target: { id: classes.planeEnum.id } }),
+            new uml.Aggregation({ source: { id: classes.bullet.id }, target: { id: classes.bulletEnum.id } }),
+
         ];
 
         _.each(relations, function (r) { graph.addCell(r); });
