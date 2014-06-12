@@ -7,13 +7,14 @@ var GameEngine = (function () {
         enemyPlanes = [],
         i,
         j,
-        PLANE_MODEL_HEIGHT = 20, //TODO Have to be changed with variable according to the height of the specific plane image
-        PLANE_MODEL_WIDTH = 20, //TODO Have to be changed with variable according to the width of the specific plane image
+        PLANE_MODEL_HEIGHT = 74, //TODO Have to be changed with variable according to the height of the specific plane image
+        PLANE_MODEL_WIDTH = 50, //TODO Have to be changed with variable according to the width of the specific plane image
         BULLET_MODEL_HEIGHT = 40,
         BULLET_MODEL_WIDTH = 10,
+        DIRECTION_DELTA = 1,
         player;
-	
-	
+
+
     // FOR testing only, will be fixed after
     //plane = new GameObject.MovingObject(100, 100, 'model', 1);
     //playerPlane = new GameObject.Plane(100, 100, 'model', 1);
@@ -23,8 +24,8 @@ var GameEngine = (function () {
     //}
 
     var handle,
-        movementDrections = { left: false, right : false, up:false, down:false};
-   
+        movementDrections = { left: false, right: false, up: false, down: false };
+
     function performMovement() {
         //TODO refactor for cleaner code and performance and locate bug with 3 direction keys pressed
         clearInterval(handle);
@@ -32,36 +33,52 @@ var GameEngine = (function () {
 
         function planeMove() {
             var movement = '',
-                movementx = '',
-                movementy = '';
-            player.plane.steeringdirection = 'neutral';
+                movementX = '',
+                movementY = '',
+                isInPlayField = true;
 
+            player.plane.steeringDirection = 'neutral';
             if (movementDrections.up) {
-                movementy = "up";
+                movementY = "up";
             }
             if (movementDrections.down) {
                 if (movementDrections.up) {
-                    movementy = '';
-                } else{
-                    movementy = 'down';
-                }
-            }
-            
-            if (movementDrections.left) {
-                movementx = "left";
-                player.plane.steeringdirection = 'left';
-            }
-            if (movementDrections.right) {
-                if (movementDrections.left) {
-                    movementx = '';
+                    movementY = '';
                 } else {
-                    movementx = 'right';
-                    player.plane.steeringdirection = 'right';
+                    movementY = 'down';
                 }
             }
 
-            movement = movementy + movementx;
-            player.plane.move(movement);
+            if (movementDrections.left) {
+                movementX = "left";
+                player.plane.steeringDirection = 'left';
+            }
+            if (movementDrections.right) {
+                if (movementDrections.left) {
+                    movementX = '';
+                } else {
+                    movementX = 'right';
+                    player.plane.steeringDirection = 'right';
+                }
+            }
+
+            if (movementX === 'left' && player.plane.x - DIRECTION_DELTA < 0) {
+                movementX = '';
+            }
+            if (movementX === "right" && player.plane.x + PLANE_MODEL_WIDTH - DIRECTION_DELTA > 700) {
+                movementX = '';
+            }
+            if (movementY === "up" && player.plane.y - DIRECTION_DELTA < 0) {
+                movementY = '';
+            }
+            if (movementY === "down" && player.plane.y + PLANE_MODEL_HEIGHT - DIRECTION_DELTA > 500) {
+                movementY = '';
+            }
+
+            movement = movementY + movementX;
+            if(movement){
+                player.plane.move(movement, DIRECTION_DELTA);
+            }
         }
 
         ;
@@ -78,11 +95,11 @@ var GameEngine = (function () {
                 //isPaused = !isPaused;
                 //left
                 break;
-            // Space -> shoot TODO
+                // Space -> shoot TODO
             case 32:
-                
+
                 break;
-            // Ctrl -> special (bomb limited uses) TODO
+                // Ctrl -> special (bomb limited uses) TODO
             case 17:
 
                 break;
@@ -269,7 +286,7 @@ var GameEngine = (function () {
     function init() {
         var playerPlane = new GameObject.Plane(200, 200, GameObject.planesEnum.T50);
         player = new playerModule.Player("Stamat", playerPlane);
-        var testEnemy = new GameObject.Plane(0,0,GameObject.planesEnum.F16);
+        var testEnemy = new GameObject.Plane(0, 0, GameObject.planesEnum.F16);
         enemyPlanes.push(testEnemy);
         animationManager.init();
     }
