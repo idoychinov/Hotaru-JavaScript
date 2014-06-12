@@ -223,7 +223,7 @@ var GameEngine = (function () {
     function moveEnemyUnits() {
         var enemiesLength = enemyPlanes.length,
             random,
-			movespeed = 2,
+			movespeed = 4,
             unit;// = new GameObject.Plane(0, 0);
 
         for (i = 0; i < enemiesLength; i++) {
@@ -241,7 +241,7 @@ var GameEngine = (function () {
             } else {
 				random = Math.random();
                 //Update position X
-                if (random < 0.5) {
+                //if (random < 0.9) {
 					random = Math.random();
 					// move on same direction if random < 0.98
 					if (random < 0.98) {
@@ -260,10 +260,10 @@ var GameEngine = (function () {
 							unit.lastMove = 'left';
 						}
 					}
-                }
+                //}
 				
 				//Update position Y
-				unit.y += 1;
+				unit.y += unit.ySpeed;
 				
                 //Check if still in canvas
                 if (unit.y < -unit.model.height || unit.x < -unit.model.width || unit.y > canvas.height || unit.x > canvas.width) {
@@ -272,6 +272,7 @@ var GameEngine = (function () {
                     enemiesLength--;
 					
 					var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
+					testEnemy.ySpeed = ((Math.random() * 4) + 1) | 0;
 					enemyPlanes.push(testEnemy);
                 }
             }
@@ -292,6 +293,7 @@ var GameEngine = (function () {
         
 		for(var i = 0; i < 3; i += 1) {
 			var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
+			testEnemy.ySpeed = ((Math.random() * 4) + 1) | 0;
 			enemyPlanes.push(testEnemy);
         }
 		
