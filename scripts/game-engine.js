@@ -23,21 +23,49 @@ var GameEngine = (function () {
     //}
 
     var handle,
-        down = false;
+        movementDrections = { left: false, right : false, up:false, down:false};
+   
+    function performMovement() {
+        //TODO refactor for cleaner code and performance and locate bug with 3 direction keys pressed
+        clearInterval(handle);
+        handle = setInterval(planeMove, 5)
 
-    function performMovement(direction) {
-        if (!down) {
-            down = true;
-            handle = setInterval(function () {
-                player.plane.move(direction);
-                direction === 'left' ? player.plane.steeringDirection = 'left' : direction === 'right' ? player.plane.steeringDirection = 'right' : 'neutral';
-            }, 5);
+        function planeMove() {
+            var movement = '',
+                movementx = '',
+                movementy = '';
+            player.plane.steeringdirection = 'neutral';
+
+            if (movementDrections.up) {
+                movementy = "up";
+            }
+            if (movementDrections.down) {
+                if (movementDrections.up) {
+                    movementy = '';
+                } else{
+                    movementy = 'down';
+                }
+            }
+            
+            if (movementDrections.left) {
+                movementx = "left";
+                player.plane.steeringdirection = 'left';
+            }
+            if (movementDrections.right) {
+                if (movementDrections.left) {
+                    movementx = '';
+                } else {
+                    movementx = 'right';
+                    player.plane.steeringdirection = 'right';
+                }
+            }
+
+            movement = movementy + movementx;
+            player.plane.move(movement);
         }
-    }
 
-    document.body.addEventListener("keyup", function (e) {
-        player.plane.steeringDirection = 'neutral';
-    });
+        ;
+    }
 
     document.body.addEventListener("keydown", function (e) {
         if (!e) {
@@ -46,21 +74,33 @@ var GameEngine = (function () {
         switch (e.keyCode) {
 
             //Space -> pausing the game
-            case 32:
+            case 27:
                 //isPaused = !isPaused;
                 //left
                 break;
+            // Space -> shoot TODO
+            case 32:
+                
+                break;
+            // Ctrl -> special (bomb limited uses) TODO
+            case 17:
+
+                break;
             case 37:
-                performMovement('left');
+                movementDrections.left = true;
+                performMovement();
                 break;
             case 38:
-                performMovement('up');
+                movementDrections.up = true;
+                performMovement();
                 break;
             case 39:
-                performMovement('right');
+                movementDrections.right = true;
+                performMovement();
                 break;
             case 40:
-                performMovement('down');
+                movementDrections.down = true;
+                performMovement();
                 break;
         }
     });
@@ -68,11 +108,20 @@ var GameEngine = (function () {
     document.body.addEventListener("keyup", function (e) {
         switch (e.keyCode) {
             case 37:
+                movementDrections.left = false;
+                performMovement();
+                break;
             case 38:
+                movementDrections.up = false;
+                performMovement();
+                break;
             case 39:
+                movementDrections.right = false;
+                performMovement();
+                break;
             case 40:
-                clearInterval(handle);
-                down = false;
+                movementDrections.down = false;
+                performMovement();
                 break;
         }
     });

@@ -53,7 +53,19 @@ var GameObject = (function () {
                 this.x += DIRECTION_DELTA;
             } else if (moveDirection === 'up') {
                 this.y -= DIRECTION_DELTA;
-            } else {
+            } else if(moveDirection === 'down'){
+                this.y += DIRECTION_DELTA;
+            } else if(moveDirection ==="upleft"){
+                this.x -= DIRECTION_DELTA;
+                this.y -= DIRECTION_DELTA;
+            } else if (moveDirection === "upright") {
+                this.x += DIRECTION_DELTA;
+                this.y -= DIRECTION_DELTA;
+            } else if (moveDirection === "downleft") {
+                this.x -= DIRECTION_DELTA;
+                this.y += DIRECTION_DELTA;
+            } else if (moveDirection === "downright") {
+                this.x += DIRECTION_DELTA;
                 this.y += DIRECTION_DELTA;
             }
         };
