@@ -34,8 +34,7 @@ var GameEngine = (function () {
         function planeMove() {
             var movement = '',
                 movementX = '',
-                movementY = '',
-                isInPlayField = true;
+                movementY = '';
 
             player.plane.steeringDirection = 'neutral';
             if (movementDrections.up) {
@@ -65,13 +64,13 @@ var GameEngine = (function () {
             if (movementX === 'left' && player.plane.x - DIRECTION_DELTA < 0) {
                 movementX = '';
             }
-            if (movementX === "right" && player.plane.x + PLANE_MODEL_WIDTH - DIRECTION_DELTA > 700) {
+            if (movementX === "right" && player.plane.x + PLANE_MODEL_WIDTH - DIRECTION_DELTA > canvas.width) {
                 movementX = '';
             }
             if (movementY === "up" && player.plane.y - DIRECTION_DELTA < 0) {
                 movementY = '';
             }
-            if (movementY === "down" && player.plane.y + PLANE_MODEL_HEIGHT - DIRECTION_DELTA > 500) {
+            if (movementY === "down" && player.plane.y + PLANE_MODEL_HEIGHT - DIRECTION_DELTA > canvas.height) {
                 movementY = '';
             }
 
@@ -95,7 +94,7 @@ var GameEngine = (function () {
                 break;
                 // Space -> shoot TODO
             case 32:
-
+                bullets.push(player.plane.fireBullet(GameObject.bulletDirectionsEnum.up));
                 break;
                 // Ctrl -> special (bomb limited uses) TODO
             case 17:
@@ -152,31 +151,55 @@ var GameEngine = (function () {
 
     // Checks for every bullet it's position and if it's outside the canvas
     // It deletes it
-    function updateBullets() {
-        var bulletListLength = bullets.length,
-            currentBullet;
+    //function updateBullets() {
+    //    var bulletListLength = bullets.length,
+    //        currentBullet;
 
-        for (i = 0; i < bulletListLength; i++) {
-            currentBullet = arguments[i];
-            // Test if the bullet is inside the canvas
-            if (currentBullet.y < -currentBullet.model.height || currentBullet.y > canvas.height || currentBullet.hasHitAPlane) {
-                bullets.splice(i, 1);
-                i--;
-                bulletListLength = bullets.length;
-            } else {
-                // If the bullet is inside we are changing it's position
-                if (currentBullet.direction === 'up') {
-                    currentBullet.y -= 1;
-                } else if (currentBullet.direction === 'down') {
-                    currentBullet.y += 1;
+    //    for (i = 0; i < bulletListLength; i++) {
+    //        currentBullet = arguments[i];
+    //        // Test if the bullet is inside the canvas
+    //        if (currentBullet.y < -currentBullet.model.height || currentBullet.y > canvas.height || currentBullet.hasHitAPlane) {
+    //            bullets.splice(i, 1);
+    //            i--;
+    //            bulletListLength = bullets.length;
+    //        } else {
+    //            // If the bullet is inside we are changing it's position
+    //            if (currentBullet.direction === 'up') {
+    //                currentBullet.y -= 1;
+    //            } else if (currentBullet.direction === 'down') {
+    //                currentBullet.y += 1;
+    //            } else {
+    //                throw new Error('Problem with the bullet direction');
+    //            }
+    //        }
+    //    }
+
+    //    return bullets;
+    //}
+
+    function updateBullets() {
+        var bulletsLength = bullets.length,
+            i;
+
+        for (i = bulletsLength - 1; i >= 0; i--) {
+            if (bullets[i].direction === GameObject.bulletDirectionsEnum.up) {
+                if (bullets[i].y - bullets[i].speed < 0) {
+                    bullets.splice(i, 1);
                 } else {
-                    throw new Error('Problem with the bullet direction');
+                    bullets[i].y -= bullets[i].speed;
                 }
+            } else if (bullets[i].direction === GameObject.bulletDirectionsEnum.down) {
+                if (bullets[i].y + bullets[i].speed > canvas.height) {
+                    bullets.splice(i, 1);
+                } else {
+                    bullets[i].y += bullets[i].speed;
+                }
+            } else {
+                console.error("Unrecognized bullet direction", bullets[i]);
             }
         }
-
-        return bullets;
     }
+
 
     function checkForBulletHit() {
         var bulletListLength = bullets.length,
@@ -240,38 +263,38 @@ var GameEngine = (function () {
                 random = Math.random();
                 //Update position X
                 //if (random < 0.9) {
-                    random = Math.random();
-                    // move on same direction if random < 0.98
-                    if (random < 0.98) {
-                        // move
-                        if (unit.lastMove === 'left') {
-                            unit.x -= movespeed;
-                        } else {
-                            unit.x += movespeed;
-                        }
+                random = Math.random();
+                // move on same direction if random < 0.98
+                if (random < 0.98) {
+                    // move
+                    if (unit.lastMove === 'left') {
+                        unit.x -= movespeed;
                     } else {
-                        if (unit.lastMove === 'left') {
-                            unit.x += movespeed;
-                            unit.lastMove = 'right';
-                        } else {
-                            unit.x -= movespeed;
-                            unit.lastMove = 'left';
-                        }
+                        unit.x += movespeed;
                     }
+                } else {
+                    if (unit.lastMove === 'left') {
+                        unit.x += movespeed;
+                        unit.lastMove = 'right';
+                    } else {
+                        unit.x -= movespeed;
+                        unit.lastMove = 'left';
+                    }
+                }
                 //}
-				
-				//Update position Y
-				unit.y += unit.ySpeed;
-				
+
+                //Update position Y
+                unit.y += unit.ySpeed;
+
                 //Check if still in canvas
                 if (unit.y < -unit.model.height || unit.x < -unit.model.width || unit.y > canvas.height || unit.x > canvas.width) {
                     enemyPlanes.splice(i, 1);
                     i--;
                     enemiesLength--;
-					
-					var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
-					testEnemy.ySpeed = ((Math.random() * 4) + 1) | 0;
-					enemyPlanes.push(testEnemy);
+
+                    var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
+                    testEnemy.ySpeed = ((Math.random() * 4) + 1) | 0;
+                    enemyPlanes.push(testEnemy);
                 }
             }
         }
@@ -292,11 +315,11 @@ var GameEngine = (function () {
     function init() {
         var playerPlane = new GameObject.Plane(300, 400, GameObject.planesEnum.T50);
         player = new playerModule.Player("Stamat", playerPlane);
-        
-		for(var i = 0; i < 3; i += 1) {
-			var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
-			testEnemy.ySpeed = ((Math.random() * 4) + 1) | 0;
-			enemyPlanes.push(testEnemy);
+
+        for (var i = 0; i < 3; i += 1) {
+            var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
+            testEnemy.ySpeed = ((Math.random() * 4) + 1) | 0;
+            enemyPlanes.push(testEnemy);
         }
 
         gameLoop();
@@ -310,15 +333,14 @@ var GameEngine = (function () {
     }
 
     function update() {
-        GameEngine.moveEnemyUnits();
+        moveEnemyUnits();
+        updateBullets();
     }
 
     return {
         init: init,
         getPlayer: getPlayer,
         getEnemies: getEnemies,
-        getBullets: getBullets,
-        moveEnemyUnits: moveEnemyUnits
-
+        getBullets: getBullets
     };
 }());

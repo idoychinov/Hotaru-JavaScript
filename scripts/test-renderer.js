@@ -6,6 +6,7 @@ var animationManager = (function () {
         ctx = canvas.getContext('2d'),
         player,
         enemies,
+        bullets,
         enemiesCount;
 
     function drawPlane(plane) {
@@ -20,14 +21,18 @@ var animationManager = (function () {
 
     function drawEnemies() {
         enemiesCount = enemies.length;
-       for (i= 0; i<enemiesCount; i++){
-           var enemy = enemies[i];
-           ctx.drawImage(enemy.model, enemy.x, enemy.y, enemy.model.width/2, enemy.model.height/2);
-       }
+        for (i = 0; i < enemiesCount; i++) {
+            var enemy = enemies[i];
+            ctx.drawImage(enemy.model, enemy.x, enemy.y, enemy.model.width / 2, enemy.model.height / 2);
+        }
     }
 
     function drawBullets() {
-
+        bulletCount = bullets.length;
+        for (i = 0; i < bulletCount; i++) {
+            var bullet = bullets[i];
+            ctx.fillRect(bullet.x, bullet.y, 5, 10);
+        }
     }
 
     function render() {

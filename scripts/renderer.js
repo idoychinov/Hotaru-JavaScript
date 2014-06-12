@@ -131,7 +131,7 @@ var renderer = (function () {
             width: FIELD_WIDTH,
             height: FIELD_HEIGHT,
             fillPatternImage: image,
-            fillPatternOffset: {x: 0, y: FIELD_HEIGHT}
+            fillPatternOffset: { x: 0, y: FIELD_HEIGHT }
         });
     };
 
@@ -149,7 +149,7 @@ var renderer = (function () {
             this.isInTransition = true;
         }
 
-        this.pattern.fillPatternOffset({y: yOffset});
+        this.pattern.fillPatternOffset({ y: yOffset });
     };
 
     LoopManager.prototype.executeTransition = function () {
@@ -186,8 +186,7 @@ var renderer = (function () {
     LoopManager.prototype.startMovement = function () {
         if (!this.isInTransition) {
             this.executeLooping();
-        }
-        else {
+        } else {
             var isLast = this.executeTransition();
 
             if (isLast) return;
@@ -203,7 +202,7 @@ var renderer = (function () {
 
     /* } */
 
-// PREVIEW
+    // PREVIEW
 
     var loops = [
         new Loop("pattern.png", "transition.png",
@@ -226,7 +225,6 @@ var renderer = (function () {
             }
         )
     ];
-
 
     function start() {
         try {

@@ -9,16 +9,17 @@ var GameObject = (function () {
         f16 = new Image(),
     // Enumeration with the different bulletTypes
         bulletTypes = {
-            classic: {model: 'classic.png', speed: 10, damage: 15},
-            advanced: {model: 'classic.png', speed: 10, damage: 15}
+            classic: { model: 'classic.png', speed: 10, damage: 15 },
+            advanced: { model: 'classic.png', speed: 10, damage: 15 }
         },
         planeTypes = {
-            T50: {model: sukhoi, speed: 5, bulletType: 'classic'},
-            F16: {model: f16, speed: 5, bulletType: 'classic'}
+            T50: { model: sukhoi, speed: 5, bulletType: bulletTypes.classic },
+            F16: { model: f16, speed: 5, bulletType: bulletTypes.classic }
 
-        };
-        sukhoi.src = "textures/sukhoi_sprite.png";
-        f16.src = "textures/f16.png";
+        },
+        bulletDirections = { up: 'up', down: 'down' };
+    sukhoi.src = "textures/sukhoi_sprite.png";
+    f16.src = "textures/f16.png";
 
     function GameObject(x, y, model) {
         // X and Y -> top left pixel for the image
@@ -39,22 +40,19 @@ var GameObject = (function () {
     function Unit(x, y, model, speed) {
         GameObject.call(this, x, y, model);
         this.speed = speed;
-        this.fireBullet = function (bulletType) {
-            var currentBullet = bulletTypes.bulletType;
-            return new Bullet(this.x + planeWidth / 2, this.y + 10, currentBullet); //TODO DELTA Y FOR THE BULLET
-        };
+
         // 3 steering directions - neutral, left, right
         this.steeringDirection = 'neutral';
-        this.move = function (moveDirection,directionDelta) {
+        this.move = function (moveDirection, directionDelta) {
             if (moveDirection === 'left') {
                 this.x -= directionDelta;
             } else if (moveDirection === 'right') {
                 this.x += directionDelta;
             } else if (moveDirection === 'up') {
                 this.y -= directionDelta;
-            } else if(moveDirection === 'down'){
+            } else if (moveDirection === 'down') {
                 this.y += directionDelta;
-            } else if(moveDirection ==="upleft"){
+            } else if (moveDirection === "upleft") {
                 this.x -= directionDelta;
                 this.y -= directionDelta;
             } else if (moveDirection === "upright") {
@@ -73,20 +71,29 @@ var GameObject = (function () {
     function Plane(x, y, planeModel) {
         Unit.call(this, x, y, planeModel.model, planeModel.speed);
         this.bulletType = planeModel.bulletType;
+        this.fireBullet = function (direction) {
+            var offsetY = 1;
+            if (direction === bulletDirections.up) {
+                offsetY = -offsetY;
+            }
+            var currentBullet = new Bullet(this.x + planeWidth / 2, this.y + offsetY, this.bulletType, direction); //TODO DELTA Y FOR THE BULLET
+            return currentBullet;
+        };
     }
-    
+
     /*
      * @IMPORTANT: Causes conflicts with KineticJS - temporary disabled
      */
 
-//    Object.prototype.getName = function () {
-//        var funcNameRegex = /function (.{1,})\(/,
-//            results = (funcNameRegex).exec(this.constructor.toString());
-//        return (results && results.length > 1) ? results[1] : "";
-//    };
+    //    Object.prototype.getName = function () {
+    //        var funcNameRegex = /function (.{1,})\(/,
+    //            results = (funcNameRegex).exec(this.constructor.toString());
+    //        return (results && results.length > 1) ? results[1] : "";
+    //    };
 
     return {
         planesEnum: planeTypes,
+        bulletDirectionsEnum: bulletDirections,
         Plane: Plane
     };
 }());
