@@ -1,4 +1,4 @@
-					UML Diagram
+UML Diagram
 **************************************************
 //Contains the class hierarchy of the game.
 

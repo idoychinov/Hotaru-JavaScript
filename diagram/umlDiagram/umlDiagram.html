@@ -13,8 +13,8 @@
 
         var paper = new joint.dia.Paper({
             el: $('#paper'),
-            width: 1300,
-            height: 800,
+            width: 1920,
+            height:1080,
             gridSize: 1,
             model: graph
         });
@@ -23,23 +23,22 @@
 
         var classes = {
 
-            object: new uml.Abstract({
+            gameEngine: new uml.Abstract({
                 position: { x: 520, y: 10 },
                 size: { width: 200, height: 70 },
-                name: 'Object',
-                methods: ['+ prototype.getName() : String'],
+                name: 'GameEngine'
             }),
 
-            gameObject: new uml.Abstract({
-                position: { x: 500, y: 150 },
+            gameObject: new uml.Class({
+                position: { x: 500, y: 350 },
                 size: { width: 240, height: 100 },
                 name: 'GameObject',
                 attributes: ['x : position X', 'y : position Y', 'model : model of object', 'isAlive : is object alive'],
-                methods: [],
+                methods: ['+ prototype.getName() : String'],
             }),
 
             bullet: new uml.Class ({
-                position: { x: 350, y: 350 },
+                position: { x: 350, y: 550 },
                 size: { width: 200, height: 100 },
                 name: 'Bullet',
                 attributes: ['speed : bullet speed', 'damage : bullet demage', 'direction : bulletn direction', 'hasHitAPlane : has it hit a target'],
@@ -47,14 +46,14 @@
             }),
 
             bulletEnum: new uml.State({
-                position: { x: 100, y: 350 },
+                position: { x: 100, y: 750 },
                 size: { width: 150, height: 100 },
                 name: 'Bullet Types Enum',
                 events: ['Classic //', 'Advanced //']
             }),
 
             unit: new uml.Class({
-                position: { x: 660, y: 350 },
+                position: { x: 660, y: 550 },
                 size: { width: 200, height: 100 },
                 name: 'Unit',
                 attributes: ['speed : unit speed', 'steeringDirection: direction of steering'],
@@ -62,7 +61,7 @@
             }),
 
             plane: new uml.Class({
-                position: { x: 660, y: 550 },
+                position: { x: 660, y: 850 },
                 size: { width: 200, height: 100 },
                 name: 'Plane',
                 attributes: ['bulletType : bulet type'],
@@ -70,46 +69,70 @@
             }),
 
             planeEnum: new uml.State({
-                position: { x: 960, y: 550 },
+                position: { x: 360, y: 850 },
                 size: { width: 200, height: 100 },
                 name: 'Plane Types Enum',
                 events: ['T50 //','F16 //']
             }),
 
             player: new uml.Class({
-                position: { x: 1000, y: 50 },
+                position: { x: 50, y: 350 },
                 size: { width: 150, height: 100 },
                 name: 'Player',
                 attributes: ['name : player name', 'plane: plyer plane']
             }),
 
+
+
             loop: new uml.Class({
-                position: { x: 1000, y: 200 },
-                size: { width: 150, height: 100 },
+                position: { x: 1000, y: 350 },
+                size: { width: 200, height: 100 },
                 name: 'Loop',
                 attributes: ['patternSource : pattern source', 'transitionSource: transition source', 'transitionCondition : transition condition']
             }),
 
             LoopManager: new uml.Class({
-                position: { x: 1000, y: 350 },
-                size: { width: 200, height: 200 },
+                position: { x: 1300, y: 350 },
+                size: { width: 200, height: 300 },
                 name: 'Loop Manager',
                 attributes: ['LOOP_SPEED : 10', 'isInTransition: is it in transition', 'loopCount : loop count', 'index : index', 'followingIndex : following index',
-                'loops : loops', 'stage : stage']
+                'loops : loops', 'stage : stage', 'pattern : pattern', 'patternImg : pattern image', 'transition: transition', 'transitionImg : transition image',
+                'layer : layer'],
+                methods: ['+ initializeFields() : Void', '+drawStage(stage) : Void', '+generatePatternContainer\n(image, startPos) : Kinetic.Rect',
+                    '+executeLooping() : Void', '+executeTransition() : Void', '+startMovement() : Void']
             }),
-           
+
+            playerManager: new uml.Abstract({
+                position: { x: 50, y: 150 },
+                size: { width: 150, height: 100 },
+                name: 'Player Manager'
+            }),
+
+            objectManager: new uml.Abstract({
+                position: { x: 500, y: 150 },
+                size: { width: 250, height: 100 },
+                name: 'Object Manager'
+            }),
+
+            renderer: new uml.Abstract({
+                position: { x: 1000, y: 150 },
+                size: { width: 250, height: 100 },
+                name: 'Renderer'
+            }),
         }
 
         _.each(classes, function (c) { graph.addCell(c); });
 
         var relations = [
-            new uml.Implementation({ source: { id: classes.gameObject.id }, target: { id: classes.object.id } }),
             new uml.Implementation({ source: { id: classes.bullet.id }, target: { id: classes.gameObject.id } }),
             new uml.Implementation({ source: { id: classes.unit.id }, target: { id: classes.gameObject.id } }),
             new uml.Implementation({ source: { id: classes.plane.id }, target: { id: classes.unit.id } }),
             new uml.Aggregation({ source: { id: classes.plane.id }, target: { id: classes.planeEnum.id } }),
             new uml.Aggregation({ source: { id: classes.bullet.id }, target: { id: classes.bulletEnum.id } }),
-
+            new uml.Association({ source: { id: classes.player.id }, target: { id: classes.playerManager.id } }),
+            new uml.Association({ source: { id: classes.loop.id }, target: { id: classes.renderer.id } }),
+            new uml.Association({ source: { id: classes.LoopManager.id }, target: { id: classes.renderer.id } }),
+            new uml.Association({ source: { id: classes.gameObject.id }, target: { id: classes.objectManager.id } }),
         ];
 
         _.each(relations, function (r) { graph.addCell(r); });
