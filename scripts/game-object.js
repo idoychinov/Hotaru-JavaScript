@@ -5,7 +5,6 @@ var GameObject = (function () {
     'use strict';
     var planeWidth = 20,
     // when moving, the direction will change 1 pixel at the time
-        DIRECTION_DELTA = 1,
         sukhoi = new Image(), //142  / 98  / 98 /210
         f16 = new Image(),
     // Enumeration with the different bulletTypes
@@ -46,27 +45,27 @@ var GameObject = (function () {
         };
         // 3 steering directions - neutral, left, right
         this.steeringDirection = 'neutral';
-        this.move = function (moveDirection) {
+        this.move = function (moveDirection,directionDelta) {
             if (moveDirection === 'left') {
-                this.x -= DIRECTION_DELTA;
+                this.x -= directionDelta;
             } else if (moveDirection === 'right') {
-                this.x += DIRECTION_DELTA;
+                this.x += directionDelta;
             } else if (moveDirection === 'up') {
-                this.y -= DIRECTION_DELTA;
+                this.y -= directionDelta;
             } else if(moveDirection === 'down'){
-                this.y += DIRECTION_DELTA;
+                this.y += directionDelta;
             } else if(moveDirection ==="upleft"){
-                this.x -= DIRECTION_DELTA;
-                this.y -= DIRECTION_DELTA;
+                this.x -= directionDelta;
+                this.y -= directionDelta;
             } else if (moveDirection === "upright") {
-                this.x += DIRECTION_DELTA;
-                this.y -= DIRECTION_DELTA;
+                this.x += directionDelta;
+                this.y -= directionDelta;
             } else if (moveDirection === "downleft") {
-                this.x -= DIRECTION_DELTA;
-                this.y += DIRECTION_DELTA;
+                this.x -= directionDelta;
+                this.y += directionDelta;
             } else if (moveDirection === "downright") {
-                this.x += DIRECTION_DELTA;
-                this.y += DIRECTION_DELTA;
+                this.x += directionDelta;
+                this.y += directionDelta;
             }
         };
     }
