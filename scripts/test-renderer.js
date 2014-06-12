@@ -4,7 +4,6 @@
 var animationManager = (function () {
     var canvas = document.getElementById('canvas'),
         ctx = canvas.getContext('2d'),
-        animFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame,
         player,
         enemies,
         enemiesCount;
@@ -27,7 +26,11 @@ var animationManager = (function () {
        }
     }
 
-    function animLoop() {
+    function drawBullets() {
+
+    }
+
+    function render() {
         /*
          * @changes:
          * - add clearRect on every frame (avoiding image repetition)
@@ -42,19 +45,13 @@ var animationManager = (function () {
         //ctx.fillText(displayMessage, 10, canvas.height - 10);
         player = GameEngine.getPlayer();
         enemies = GameEngine.getEnemies();
-
+        bullets = GameEngine.getBullets();
         drawPlane(player.plane);
         drawEnemies(enemies);
-        GameEngine.moveEnemyUnits();
-        animFrame(animLoop);
-
-    }
-
-    function init() {
-        animFrame(animLoop);
+        drawBullets(bullets);
     }
 
     return {
-        init: init
+        render: render
     };
 }());

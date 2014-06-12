@@ -7,13 +7,13 @@ var GameEngine = (function () {
         enemyPlanes = [],
         i,
         j,
+        animFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame,
         PLANE_MODEL_HEIGHT = 74, //TODO Have to be changed with variable according to the height of the specific plane image
         PLANE_MODEL_WIDTH = 50, //TODO Have to be changed with variable according to the width of the specific plane image
         BULLET_MODEL_HEIGHT = 40,
         BULLET_MODEL_WIDTH = 10,
         DIRECTION_DELTA = 1,
         player;
-
 
     // FOR testing only, will be fixed after
     //plane = new GameObject.MovingObject(100, 100, 'model', 1);
@@ -29,7 +29,7 @@ var GameEngine = (function () {
     function performMovement() {
         //TODO refactor for cleaner code and performance and locate bug with 3 direction keys pressed
         clearInterval(handle);
-        handle = setInterval(planeMove, 5)
+        handle = setInterval(planeMove, 5);
 
         function planeMove() {
             var movement = '',
@@ -76,12 +76,10 @@ var GameEngine = (function () {
             }
 
             movement = movementY + movementX;
-            if(movement){
+            if (movement) {
                 player.plane.move(movement, DIRECTION_DELTA);
             }
         }
-
-        ;
     }
 
     document.body.addEventListener("keydown", function (e) {
@@ -228,51 +226,51 @@ var GameEngine = (function () {
 
         for (i = 0; i < enemiesLength; i++) {
             unit = enemyPlanes[i];
-			
-			if(!unit.lastMove) {
-				unit.lastMove = 'right';
-			}
-			
+
+            if (!unit.lastMove) {
+                unit.lastMove = 'right';
+            }
+
             random = Math.random();
             if (unit.isAlive === false) {
                 enemyPlanes.splice(i, 1);
                 i--;
                 enemiesLength--;
             } else {
-				random = Math.random();
+                random = Math.random();
                 //Update position X
                 if (random < 0.5) {
-					random = Math.random();
-					// move on same direction if random < 0.98
-					if (random < 0.98) {
-						// move
-						if(unit.lastMove === 'left') {
-							unit.x -= movespeed;
-						} else {
-							unit.x += movespeed;
-						}
-					} else {
-						if(unit.lastMove === 'left') {
-							unit.x += movespeed;
-							unit.lastMove = 'right';
-						} else {
-							unit.x -= movespeed;
-							unit.lastMove = 'left';
-						}
-					}
+                    random = Math.random();
+                    // move on same direction if random < 0.98
+                    if (random < 0.98) {
+                        // move
+                        if (unit.lastMove === 'left') {
+                            unit.x -= movespeed;
+                        } else {
+                            unit.x += movespeed;
+                        }
+                    } else {
+                        if (unit.lastMove === 'left') {
+                            unit.x += movespeed;
+                            unit.lastMove = 'right';
+                        } else {
+                            unit.x -= movespeed;
+                            unit.lastMove = 'left';
+                        }
+                    }
                 }
-				
-				//Update position Y
-				unit.y += 1;
-				
+
+                //Update position Y
+                unit.y += 1;
+
                 //Check if still in canvas
                 if (unit.y < -unit.model.height || unit.x < -unit.model.width || unit.y > canvas.height || unit.x > canvas.width) {
                     enemyPlanes.splice(i, 1);
                     i--;
                     enemiesLength--;
-					
-					var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
-					enemyPlanes.push(testEnemy);
+
+                    var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
+                    enemyPlanes.push(testEnemy);
                 }
             }
         }
@@ -286,27 +284,38 @@ var GameEngine = (function () {
         return enemyPlanes;
     }
 
+    function getBullets() {
+        return bullets;
+    }
+
     function init() {
         var playerPlane = new GameObject.Plane(300, 400, GameObject.planesEnum.T50);
         player = new playerModule.Player("Stamat", playerPlane);
-        
-		for(var i = 0; i < 3; i += 1) {
-			var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
-			enemyPlanes.push(testEnemy);
+
+        for (var i = 0; i < 3; i += 1) {
+            var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
+            enemyPlanes.push(testEnemy);
         }
-		
-		animationManager.init();
+
+        gameLoop();
     }
 
     // Game logic
     function gameLoop() {
+        update();
+        animationManager.render();
+        animFrame(gameLoop);
+    }
 
+    function update() {
+        GameEngine.moveEnemyUnits();
     }
 
     return {
         init: init,
         getPlayer: getPlayer,
         getEnemies: getEnemies,
+        getBullets: getBullets,
         moveEnemyUnits: moveEnemyUnits
 
     };
