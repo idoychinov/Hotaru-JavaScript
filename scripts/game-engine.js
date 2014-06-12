@@ -270,6 +270,9 @@ var GameEngine = (function () {
                     enemyPlanes.splice(i, 1);
                     i--;
                     enemiesLength--;
+					
+					var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
+					enemyPlanes.push(testEnemy);
                 }
             }
         }
@@ -284,11 +287,15 @@ var GameEngine = (function () {
     }
 
     function init() {
-        var playerPlane = new GameObject.Plane(200, 200, GameObject.planesEnum.T50);
+        var playerPlane = new GameObject.Plane(300, 400, GameObject.planesEnum.T50);
         player = new playerModule.Player("Stamat", playerPlane);
-        var testEnemy = new GameObject.Plane(0, 0, GameObject.planesEnum.F16);
-        enemyPlanes.push(testEnemy);
-        animationManager.init();
+        
+		for(var i = 0; i < 3; i += 1) {
+			var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
+			enemyPlanes.push(testEnemy);
+        }
+		
+		animationManager.init();
     }
 
     // Game logic
