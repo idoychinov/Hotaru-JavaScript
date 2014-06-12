@@ -75,6 +75,28 @@
                 name: 'Plane Types Enum',
                 events: ['T50 //','F16 //']
             }),
+
+            player: new uml.Class({
+                position: { x: 1000, y: 50 },
+                size: { width: 150, height: 100 },
+                name: 'Player',
+                attributes: ['name : player name', 'plane: plyer plane']
+            }),
+
+            loop: new uml.Class({
+                position: { x: 1000, y: 200 },
+                size: { width: 150, height: 100 },
+                name: 'Loop',
+                attributes: ['patternSource : pattern source', 'transitionSource: transition source', 'transitionCondition : transition condition']
+            }),
+
+            LoopManager: new uml.Class({
+                position: { x: 1000, y: 350 },
+                size: { width: 200, height: 200 },
+                name: 'Loop Manager',
+                attributes: ['LOOP_SPEED : 10', 'isInTransition: is it in transition', 'loopCount : loop count', 'index : index', 'followingIndex : following index',
+                'loops : loops', 'stage : stage']
+            }),
            
         }
 
