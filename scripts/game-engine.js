@@ -7,13 +7,14 @@ var GameEngine = (function () {
         enemyPlanes = [],
         i,
         j,
-        PLANE_MODEL_HEIGHT = 20, //TODO Have to be changed with variable according to the height of the specific plane image
-        PLANE_MODEL_WIDTH = 20, //TODO Have to be changed with variable according to the width of the specific plane image
+        animFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame,
+        PLANE_MODEL_HEIGHT = 74, //TODO Have to be changed with variable according to the height of the specific plane image
+        PLANE_MODEL_WIDTH = 50, //TODO Have to be changed with variable according to the width of the specific plane image
         BULLET_MODEL_HEIGHT = 40,
         BULLET_MODEL_WIDTH = 10,
+        DIRECTION_DELTA = 1,
         player;
-	
-	
+
     // FOR testing only, will be fixed after
     //plane = new GameObject.MovingObject(100, 100, 'model', 1);
     //playerPlane = new GameObject.Plane(100, 100, 'model', 1);
@@ -23,21 +24,63 @@ var GameEngine = (function () {
     //}
 
     var handle,
-        down = false;
+        movementDrections = { left: false, right: false, up: false, down: false };
 
-    function performMovement(direction) {
-        if (!down) {
-            down = true;
-            handle = setInterval(function () {
-                player.plane.move(direction);
-                direction === 'left' ? player.plane.steeringDirection = 'left' : direction === 'right' ? player.plane.steeringDirection = 'right' : 'neutral';
-            }, 5);
+    function performMovement() {
+        //TODO refactor for cleaner code and performance and locate bug with 3 direction keys pressed
+        clearInterval(handle);
+        handle = setInterval(planeMove, 5);
+
+        function planeMove() {
+            var movement = '',
+                movementX = '',
+                movementY = '',
+                isInPlayField = true;
+
+            player.plane.steeringDirection = 'neutral';
+            if (movementDrections.up) {
+                movementY = "up";
+            }
+            if (movementDrections.down) {
+                if (movementDrections.up) {
+                    movementY = '';
+                } else {
+                    movementY = 'down';
+                }
+            }
+
+            if (movementDrections.left) {
+                movementX = "left";
+                player.plane.steeringDirection = 'left';
+            }
+            if (movementDrections.right) {
+                if (movementDrections.left) {
+                    movementX = '';
+                } else {
+                    movementX = 'right';
+                    player.plane.steeringDirection = 'right';
+                }
+            }
+
+            if (movementX === 'left' && player.plane.x - DIRECTION_DELTA < 0) {
+                movementX = '';
+            }
+            if (movementX === "right" && player.plane.x + PLANE_MODEL_WIDTH - DIRECTION_DELTA > 700) {
+                movementX = '';
+            }
+            if (movementY === "up" && player.plane.y - DIRECTION_DELTA < 0) {
+                movementY = '';
+            }
+            if (movementY === "down" && player.plane.y + PLANE_MODEL_HEIGHT - DIRECTION_DELTA > 500) {
+                movementY = '';
+            }
+
+            movement = movementY + movementX;
+            if (movement) {
+                player.plane.move(movement, DIRECTION_DELTA);
+            }
         }
     }
-
-    document.body.addEventListener("keyup", function (e) {
-        player.plane.steeringDirection = 'neutral';
-    });
 
     document.body.addEventListener("keydown", function (e) {
         if (!e) {
@@ -46,21 +89,33 @@ var GameEngine = (function () {
         switch (e.keyCode) {
 
             //Space -> pausing the game
-            case 32:
+            case 27:
                 //isPaused = !isPaused;
                 //left
                 break;
+                // Space -> shoot TODO
+            case 32:
+
+                break;
+                // Ctrl -> special (bomb limited uses) TODO
+            case 17:
+
+                break;
             case 37:
-                performMovement('left');
+                movementDrections.left = true;
+                performMovement();
                 break;
             case 38:
-                performMovement('up');
+                movementDrections.up = true;
+                performMovement();
                 break;
             case 39:
-                performMovement('right');
+                movementDrections.right = true;
+                performMovement();
                 break;
             case 40:
-                performMovement('down');
+                movementDrections.down = true;
+                performMovement();
                 break;
         }
     });
@@ -68,11 +123,20 @@ var GameEngine = (function () {
     document.body.addEventListener("keyup", function (e) {
         switch (e.keyCode) {
             case 37:
+                movementDrections.left = false;
+                performMovement();
+                break;
             case 38:
+                movementDrections.up = false;
+                performMovement();
+                break;
             case 39:
+                movementDrections.right = false;
+                performMovement();
+                break;
             case 40:
-                clearInterval(handle);
-                down = false;
+                movementDrections.down = false;
+                performMovement();
                 break;
         }
     });
@@ -157,37 +221,57 @@ var GameEngine = (function () {
     function moveEnemyUnits() {
         var enemiesLength = enemyPlanes.length,
             random,
+			movespeed = 4,
             unit;// = new GameObject.Plane(0, 0);
 
         for (i = 0; i < enemiesLength; i++) {
             unit = enemyPlanes[i];
+
+            if (!unit.lastMove) {
+                unit.lastMove = 'right';
+            }
+
             random = Math.random();
             if (unit.isAlive === false) {
                 enemyPlanes.splice(i, 1);
                 i--;
                 enemiesLength--;
             } else {
-                //Update position
-                if (random < 0.20) {
-                    unit.x -= 1;
-                } else if (random < 0.30) {
-                    unit.x -= 1;
-                    unit.y += 1;
-                } else if (random < 0.40) {
-                    unit.x += 1;
-                    unit.y += 1;
-                }
-                if (random < 0.80) {
-                    unit.y += 1;
-                } else {
-                    unit.x += 1;
-                }
-
+                random = Math.random();
+                //Update position X
+                //if (random < 0.9) {
+                    random = Math.random();
+                    // move on same direction if random < 0.98
+                    if (random < 0.98) {
+                        // move
+                        if (unit.lastMove === 'left') {
+                            unit.x -= movespeed;
+                        } else {
+                            unit.x += movespeed;
+                        }
+                    } else {
+                        if (unit.lastMove === 'left') {
+                            unit.x += movespeed;
+                            unit.lastMove = 'right';
+                        } else {
+                            unit.x -= movespeed;
+                            unit.lastMove = 'left';
+                        }
+                    }
+                //}
+				
+				//Update position Y
+				unit.y += unit.ySpeed;
+				
                 //Check if still in canvas
                 if (unit.y < -unit.model.height || unit.x < -unit.model.width || unit.y > canvas.height || unit.x > canvas.width) {
                     enemyPlanes.splice(i, 1);
                     i--;
                     enemiesLength--;
+					
+					var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
+					testEnemy.ySpeed = ((Math.random() * 4) + 1) | 0;
+					enemyPlanes.push(testEnemy);
                 }
             }
         }
@@ -201,23 +285,39 @@ var GameEngine = (function () {
         return enemyPlanes;
     }
 
+    function getBullets() {
+        return bullets;
+    }
+
     function init() {
-        var playerPlane = new GameObject.Plane(200, 200, GameObject.planesEnum.T50);
+        var playerPlane = new GameObject.Plane(300, 400, GameObject.planesEnum.T50);
         player = new playerModule.Player("Stamat", playerPlane);
-        var testEnemy = new GameObject.Plane(0,0,GameObject.planesEnum.F16);
-        enemyPlanes.push(testEnemy);
-        animationManager.init();
+        
+		for(var i = 0; i < 3; i += 1) {
+			var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
+			testEnemy.ySpeed = ((Math.random() * 4) + 1) | 0;
+			enemyPlanes.push(testEnemy);
+        }
+
+        gameLoop();
     }
 
     // Game logic
     function gameLoop() {
+        update();
+        animationManager.render();
+        animFrame(gameLoop);
+    }
 
+    function update() {
+        GameEngine.moveEnemyUnits();
     }
 
     return {
         init: init,
         getPlayer: getPlayer,
         getEnemies: getEnemies,
+        getBullets: getBullets,
         moveEnemyUnits: moveEnemyUnits
 
     };

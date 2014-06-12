@@ -4,13 +4,25 @@
     <meta charset="UTF-8">
     <title></title>
     <script type="text/javascript" src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v5.1.0.min.js"></script>
+    <style type="text/css">
+        #background, #canvas {
+            position: absolute;
+            width: 700px; height: 500px;
+            top: 0; left: 0;
+        }
+    </style>
 </head>
 <body>
-<button onclick="GameEngine.init()"></button>
-<div id="canvasKinetic"></div>
-<canvas width="700" height="500" id="canvas"></canvas><script src="scripts/game-object.js"></script>
-<script src="scripts/player.js"></script>
-<script src="scripts/game-engine.js"></script>
-<script src="scripts/test-renderer.js"></script>
+<div id="background"></div>
+<canvas width="700" height="500" id="canvas"></canvas>
+<script src="scripts/game-object.js"></script>
+<script type="text/javascript" src="scripts/player.js"></script>
+<script type="text/javascript" src="scripts/game-engine.js"></script>
+<script type="text/javascript" src="scripts/background-looper.js"></script>
+<script type="text/javascript" src="scripts/test-renderer.js"></script>
+<script type="text/javascript">
+    GameEngine.init();
+    BackgroundLooper.run();
+</script>
 </body>
 </html>
