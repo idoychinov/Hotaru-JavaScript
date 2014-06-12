@@ -14,7 +14,7 @@
         var paper = new joint.dia.Paper({
             el: $('#paper'),
             width: 1000,
-            height: 600,
+            height: 800,
             gridSize: 1,
             model: graph
         });
@@ -22,8 +22,16 @@
         var uml = joint.shapes.uml;
 
         var classes = {
+
+            object: new uml.Abstract({
+                position: { x: 320, y: 10 },
+                size: { width: 200, height: 50 },
+                name: 'Object',
+                methods: ['+ prototype.getName() : String'],
+            }),
+
             gameObject: new uml.Abstract({
-                position: { x: 300, y: 50 },
+                position: { x: 300, y: 150 },
                 size: { width: 240, height: 100 },
                 name: 'GameObject',
                 attributes: ['x : position X', 'y : position Y', 'model : model of object', 'isAline : is object alive'],
@@ -31,7 +39,7 @@
             }),
 
             bullet: new uml.Class ({
-                position: { x: 150, y: 300 },
+                position: { x: 150, y: 350 },
                 size: { width: 200, height: 100 },
                 name: 'Bullet',
                 attributes: ['speed : bullet speed', 'damage : bullet demage', 'direction : bulletn direction', 'hasHitAPlane : has it hit a target'],
@@ -39,11 +47,19 @@
             }),
 
             unit: new uml.Class({
-                position: { x: 460, y: 300 },
+                position: { x: 460, y: 350 },
                 size: { width: 200, height: 100 },
                 name: 'Unit',
-                attributes: ['speed: unit speed', 'steeringDirection: direction of steering'],
-                methods: ['+ fireBullet(bulletType): Bullet', '+ move(moveDirection): Void']
+                attributes: ['speed : unit speed', 'steeringDirection: direction of steering'],
+                methods: ['+ fireBullet(bulletType) : Bullet', '+ move(moveDirection) : Void']
+            }),
+
+            plane: new uml.Class({
+                position: { x: 460, y: 550 },
+                size: { width: 200, height: 100 },
+                name: 'Plane',
+                attributes: ['bulletType : bulet type'],
+                methods: []
             }),
            
         }
@@ -51,8 +67,10 @@
         _.each(classes, function (c) { graph.addCell(c); });
 
         var relations = [
+            new uml.Implementation({ source: { id: classes.gameObject.id }, target: { id: classes.object.id } }),
             new uml.Implementation({ source: { id: classes.bullet.id }, target: { id: classes.gameObject.id } }),
             new uml.Implementation({ source: { id: classes.unit.id }, target: { id: classes.gameObject.id } }),
+            new uml.Implementation({ source: { id: classes.plane.id }, target: { id: classes.unit.id } }),
         ];
 
         _.each(relations, function (r) { graph.addCell(r); });
