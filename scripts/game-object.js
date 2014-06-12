@@ -17,8 +17,8 @@ var GameObject = (function () {
             F16: {model: f16, speed: 5, bulletType: 'classic'}
 
         };
-        sukhoi.src = "scripts/sukhoi_sprite.png";
-        f16.src = "scripts/f16.png"
+        sukhoi.src = "textures/sukhoi_sprite.png";
+        f16.src = "textures/f16.png";
 
     function GameObject(x, y, model) {
         // X and Y -> top left pixel for the image
@@ -74,12 +74,16 @@ var GameObject = (function () {
         Unit.call(this, x, y, planeModel.model, planeModel.speed);
         this.bulletType = planeModel.bulletType;
     }
+    
+    /*
+     * @IMPORTANT: Causes conflicts with KineticJS - temporary disabled
+     */
 
-    Object.prototype.getName = function () {
-        var funcNameRegex = /function (.{1,})\(/,
-            results = (funcNameRegex).exec(this.constructor.toString());
-        return (results && results.length > 1) ? results[1] : "";
-    };
+//    Object.prototype.getName = function () {
+//        var funcNameRegex = /function (.{1,})\(/,
+//            results = (funcNameRegex).exec(this.constructor.toString());
+//        return (results && results.length > 1) ? results[1] : "";
+//    };
 
     return {
         planesEnum: planeTypes,

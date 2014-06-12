@@ -28,9 +28,14 @@ var animationManager = (function () {
     }
 
     function animLoop() {
-
-        ctx.fillStyle = "#001000";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        /*
+         * @changes:
+         * - add clearRect on every frame (avoiding image repetition)
+         * - changed canvas background to transparent
+         */
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        //ctx.fillStyle = "#001000";
+        //ctx.fillRect(0, 0, canvas.width, canvas.height);
         //ctx.font = "18px Arial";
         //ctx.fillStyle = "red";
         //displayMessage = 'Score : ' + score.toString() + ", Level : " + level;
