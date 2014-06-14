@@ -13,6 +13,7 @@ var GameEngine = (function () {
         movementDrections = { left: false, right: false, up: false, down: false },
         playerIsShooting = false;
 
+
     // FOR testing only, will be fixed after
     //plane = new GameObject.MovingObject(100, 100, 'model', 1);
     //playerPlane = new GameObject.Plane(100, 100, 'model', 1);
@@ -152,7 +153,7 @@ var GameEngine = (function () {
     function updateBullets() {
         var bulletsLength = bullets.length,
             i;
-        
+
         for (i = bulletsLength - 1; i >= 0; i--) {
             if (bullets[i].direction === GameObject.bulletDirectionsEnum.up) {
                 if (bullets[i].y - bullets[i].model.speed < 0) {
@@ -264,10 +265,35 @@ var GameEngine = (function () {
                     i--;
                     enemiesLength--;
 
-                    var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
-                    testEnemy.ySpeed = ((Math.random() * 4) + 1) | 0;
-                    enemyPlanes.push(testEnemy);
+                    //var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
+                    //testEnemy.ySpeed = ((Math.random() * 4) + 1) | 0;
+                    //enemyPlanes.push(testEnemy);
                 }
+            }
+        }
+    }
+
+    function RespawnEnemies() {
+        var enemyX,
+            enemyY,
+            enemyModel = GameObject.planesEnum.F16,
+            spawnedEnemy,
+            enemiesLength = enemyPlanes.length,
+            spawnChanceTreshhold = Math.floor((Math.random() * 10000) + 1),  // determins the chance for spawn.
+            enemySpawnChanceRates = [1000, 200, 50]; // determins the chance for spawning new enemy based on how many enemyies are currently on the field
+
+        // check if there is defined spawn rate for the current numer of enemies and if there is compere it to the treshhold for spawning new enemy
+        if (!isNaN(enemySpawnChanceRates[enemiesLength])) {
+            if (enemySpawnChanceRates[enemiesLength] > spawnChanceTreshhold) {
+                enemyX = (Math.random() * canvas.width+1) | 0;
+                if (enemyX > canvas.width - enemyModel.width) {
+                    enemyX = canvas.width - enemyModel.width;
+                }
+                enemyY = -enemyModel.height;
+
+                spawnedEnemy = new GameObject.Plane(enemyX, enemyY, enemyModel);
+                spawnedEnemy.ySpeed = ((Math.random() * 4) + 1) | 0;
+                enemyPlanes.push(spawnedEnemy)
             }
         }
     }
@@ -298,28 +324,53 @@ var GameEngine = (function () {
         var playerPlane = new GameObject.Plane(300, 400, GameObject.planesEnum.T50);
         player = new playerModule.Player("Stamat", playerPlane);
 
-        for (var i = 0; i < 3; i += 1) {
-            var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
-            testEnemy.ySpeed = ((Math.random() * 4) + 1) | 0;
-            enemyPlanes.push(testEnemy);
-        }
+        //for (var i = 0; i < 3; i += 1) {
+        //    var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
+        //    testEnemy.ySpeed = ((Math.random() * 4) + 1) | 0;
+        //    enemyPlanes.push(testEnemy);
+        //}
 
-        gameLoop();
+        animFrame(gameLoop);
     }
+
+    // Idea - Game loop with timestamp for runing the game more smothly
+    // var now,delta, last = timestamp()
+    // Timer - used for making the game loop run smoothly.
+    //function timestamp() {
+    //    return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
+    //}
+    //function gameLoop() {
+    //    now = timestamp();
+    //    delta = Math.min(1,(now - last) / 1000); // capping delta to 1 sec if for example the browser loses focus.
+
+    //    update(delta);
+    //    render(delta);
+    //    last = now;
+
+    //    animFrame(gameLoop);
+    //}
 
     // Game logic
     function gameLoop() {
-        animationManager.render();
         update();
-
+        render();
         animFrame(gameLoop);
     }
 
     function update() {
         updatePlayerPlane();
+        //updateEnemyUnits
         moveEnemyUnits();
         updateBullets();
+        RespawnEnemies();
+        //checkForCollisions();
     }
+
+    function render() {
+        animationManager.render();
+    }
+
+
 
     return {
         init: init,
