@@ -11,11 +11,13 @@ var animationManager = (function () {
 
     function drawPlane(plane) {
         if (plane.steeringDirection == 'neutral') {
-            ctx.drawImage(plane.model, 0, 0, 142, 210, plane.x, plane.y, 50, 74);
+            ctx.drawImage(plane.model.model, 0, 0, 142, 210, plane.x, plane.y, plane.model.width, plane.model.height);
         } else if (plane.steeringDirection == 'left') {
-            ctx.drawImage(plane.model, 142, 0, 142, 210, plane.x, plane.y, 50, 74);
+            ctx.drawImage(plane.model.model, 142, 0, 142, 210, plane.x, plane.y, plane.model.width, plane.model.height);
+        } else if(plane.steeringDirection == 'right'){
+            ctx.drawImage(plane.model.model, 284, 0, 142, 210, plane.x, plane.y, plane.model.width, plane.model.height);
         } else {
-            ctx.drawImage(plane.model, 284, 0, 142, 210, plane.x, plane.y, 50, 74);
+            console.error("Unrecognized steeringDirection",plane.steeringDirection)
         }
     }
 
@@ -23,7 +25,7 @@ var animationManager = (function () {
         enemiesCount = enemies.length;
         for (i = 0; i < enemiesCount; i++) {
             var enemy = enemies[i];
-            ctx.drawImage(enemy.model, enemy.x, enemy.y, enemy.model.width / 2, enemy.model.height / 2);
+            ctx.drawImage(enemy.model.model, enemy.x, enemy.y, enemy.model.width, enemy.model.height);
         }
     }
 
@@ -31,7 +33,7 @@ var animationManager = (function () {
         bulletCount = bullets.length;
         for (i = 0; i < bulletCount; i++) {
             var bullet = bullets[i];
-            ctx.fillRect(bullet.x, bullet.y, 5, 10);
+            ctx.fillRect(bullet.x, bullet.y, bullet.model.width, bullet.model.height);
         }
     }
 

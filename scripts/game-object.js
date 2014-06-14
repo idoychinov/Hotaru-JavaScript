@@ -3,18 +3,16 @@
 /*jslint browser:true */
 var GameObject = (function () {
     'use strict';
-    var planeWidth = 20,
-    // when moving, the direction will change 1 pixel at the time
-        sukhoi = new Image(), //142  / 98  / 98 /210
+    var sukhoi = new Image(), //142  / 98  / 98 /210
         f16 = new Image(),
-    // Enumeration with the different bulletTypes
+    // Enumeration with the different bulletTypes. Fire riate lower == faster (less ticks needed to go out of cooldown)
         bulletTypes = {
-            classic: { model: 'classic.png', speed: 10, damage: 15 },
-            advanced: { model: 'classic.png', speed: 10, damage: 15 }
+            classic: { model: 'classic.png', speed: 10, damage: 15, width: 6,height: 12, rateOfFire:20 },
+            advanced: { model: 'classic.png', speed: 10, damage: 15, width: 10, height: 20, rateOfFire:30 }
         },
         planeTypes = {
-            T50: { model: sukhoi, speed: 5, bulletType: bulletTypes.classic },
-            F16: { model: f16, speed: 5, bulletType: bulletTypes.classic }
+            T50: { model: sukhoi, speed: 1, bulletType: bulletTypes.classic, width: 50, height: 74},
+            F16: { model: f16, speed: 5, bulletType: bulletTypes.classic, width: 67, height: 105 }
 
         },
         bulletDirections = { up: 'up', down: 'down' };
@@ -30,16 +28,13 @@ var GameObject = (function () {
     }
 
     function Bullet(x, y, bulletType, direction) {
-        GameObject.call(this, x, y, bulletType.model);
-        this.speed = bulletType.speed;
-        this.damage = bulletType.damage;
+        GameObject.call(this, x, y, bulletType);
         this.direction = direction;
         this.hasHitAPlane = false;
     }
 
-    function Unit(x, y, model, speed) {
+    function Unit(x, y, model) {
         GameObject.call(this, x, y, model);
-        this.speed = speed;
 
         // 3 steering directions - neutral, left, right
         this.steeringDirection = 'neutral';
@@ -69,14 +64,15 @@ var GameObject = (function () {
     }
 
     function Plane(x, y, planeModel) {
-        Unit.call(this, x, y, planeModel.model, planeModel.speed);
-        this.bulletType = planeModel.bulletType;
+        Unit.call(this, x, y, planeModel);
+        this.shotCooldown = 0;
+        this.currentBulletType = planeModel.bulletType;
         this.fireBullet = function (direction) {
             var offsetY = 1;
             if (direction === bulletDirections.up) {
                 offsetY = -offsetY;
             }
-            var currentBullet = new Bullet(this.x + planeWidth / 2, this.y + offsetY, this.bulletType, direction); //TODO DELTA Y FOR THE BULLET
+            var currentBullet = new Bullet(this.x + (this.model.width / 2) - (this.currentBulletType.width / 2), this.y + offsetY, this.currentBulletType, direction); //TODO DELTA Y FOR THE BULLET
             return currentBullet;
         };
     }
