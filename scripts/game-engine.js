@@ -220,19 +220,24 @@ var GameEngine = (function () {
 			movespeed = GameObject.planesEnum.F16.speed,
             unit;// = new GameObject.Plane(0, 0);
 
-        for (i = enemiesLength-1; i >=0 ; i--) {
+        for (i = enemiesLength - 1; i >= 0 ; i--) {
             unit = enemyPlanes[i];
 
             //AI for moving at players direction
-            if(unit.x>player.plane.x){
-                unit.steeringDirection = "left";
-                unit.x -= unit.model.speed;
-            } else if (unit.x < player.plane.x) {
-                unit.steeringDirection = "right";
-                unit.x += unit.model.speed;
-            } else {
+            if (i > 0 && detectImminentCollisionBetweenEnemies(unit, enemyPlanes, movespeed * 3)) {
                 unit.steeringDirection = "neutral";
+            } else {
 
+                if (unit.x > player.plane.x) {
+                    unit.steeringDirection = "left";
+                    unit.x -= unit.model.speed;
+                } else if (unit.x < player.plane.x) {
+                    unit.steeringDirection = "right";
+                    unit.x += unit.model.speed;
+                } else {
+                    unit.steeringDirection = "neutral";
+
+                }
             }
             unit.y += unit.model.speed;
 
@@ -248,52 +253,64 @@ var GameEngine = (function () {
             if (unit.shotCooldown == 0) {
                 random = (Math.random() * 6) | 0;
                 bullets.push(unit.fireBullet(GameObject.bulletDirectionsEnum.down));
-                unit.shotCooldown = unit.currentBulletType.rateOfFire*(5+random);
+                unit.shotCooldown = unit.currentBulletType.rateOfFire * (5 + random);
             }
         }
-            //if (!unit.lastMove) {
-            //    unit.lastMove = 'right';
-            //}
+        //if (!unit.lastMove) {
+        //    unit.lastMove = 'right';
+        //}
 
-            //random = Math.random();
-            //if (unit.isAlive === false) {
-            //    enemyPlanes.splice(i, 1);
-            //    i--;
-            //    enemiesLength--;
-            //} else {
-            //    random = Math.random();
-            //    //Update position X
-            //    //if (random < 0.9) {
-            //    random = Math.random();
-            //    // move on same direction if random < 0.98
-            //    if (random < 0.98) {
-            //        // move
-            //        if (unit.lastMove === 'left') {
-            //            unit.x -= movespeed;
-            //        } else {
-            //            unit.x += movespeed;
-            //        }
-            //    } else {
-            //        if (unit.lastMove === 'left') {
-            //            unit.x += movespeed;
-            //            unit.lastMove = 'right';
-            //        } else {
-            //            unit.x -= movespeed;
-            //            unit.lastMove = 'left';
-            //        }
-            //    }
-            //}
+        //random = Math.random();
+        //if (unit.isAlive === false) {
+        //    enemyPlanes.splice(i, 1);
+        //    i--;
+        //    enemiesLength--;
+        //} else {
+        //    random = Math.random();
+        //    //Update position X
+        //    //if (random < 0.9) {
+        //    random = Math.random();
+        //    // move on same direction if random < 0.98
+        //    if (random < 0.98) {
+        //        // move
+        //        if (unit.lastMove === 'left') {
+        //            unit.x -= movespeed;
+        //        } else {
+        //            unit.x += movespeed;
+        //        }
+        //    } else {
+        //        if (unit.lastMove === 'left') {
+        //            unit.x += movespeed;
+        //            unit.lastMove = 'right';
+        //        } else {
+        //            unit.x -= movespeed;
+        //            unit.lastMove = 'left';
+        //        }
+        //    }
+        //}
 
-            //Update position Y
-            //unit.y += unit.ySpeed;
-            //var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
-            //testEnemy.ySpeed = ((Math.random() * 4) + 1) | 0;
-            //enemyPlanes.push(testEnemy);
-         
+        //Update position Y
+        //unit.y += unit.ySpeed;
+        //var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
+        //testEnemy.ySpeed = ((Math.random() * 4) + 1) | 0;
+        //enemyPlanes.push(testEnemy);
+
     }
 
+    // UNFINISHED
+    function detectImminentCollisionBetweenEnemies(enemy, enemyList, detectionDistance) {
 
-    function RespawnEnemies() {
+        for (var i = 0; i < enemyList.length; i++) {
+            if (enemy !== enemyList[i]) {
+                if (enemy.x + detectionDistance >= enemyList[i].x || enemy.x - detectionDistance <= enemyList[i].x) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    function respawnEnemies() {
         var enemyX,
             enemyY,
             enemyModel = GameObject.planesEnum.F16,
@@ -327,7 +344,7 @@ var GameEngine = (function () {
             player.plane.shotCooldown = player.plane.currentBulletType.rateOfFire;
         }
 
-        
+
     }
 
     function getPlayer() {
@@ -384,7 +401,7 @@ var GameEngine = (function () {
         updateEnemyUnits();
         //moveEnemyUnits();
         updateBullets();
-        RespawnEnemies();
+        respawnEnemies();
         //checkForCollisions();
     }
 
