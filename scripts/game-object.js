@@ -12,8 +12,8 @@ var GameObject = (function () {
             enemyBullet: { model: 'classic.png', speed: 5, damage: 15, width: 6, height: 12, rateOfFire:30 }
         },
         planeTypes = {
-            T50: { model: sukhoi, speed: 1, bulletType: bulletTypes.classic, width: 50, height: 74},
-            F16: { model: f16, speed: 1, bulletType: bulletTypes.classic, width: 67, height: 105 }
+            T50: { model: sukhoi, speed: 1, bulletType: bulletTypes.classic, width: 50, height: 74, hitPoints:70},
+            F16: { model: f16, speed: 1, bulletType: bulletTypes.classic, width: 67, height: 105, hitPoints:40 }
 
         },
         bulletDirections = { up: 'up', down: 'down' };
@@ -36,7 +36,7 @@ var GameObject = (function () {
 
     function Unit(x, y, model) {
         GameObject.call(this, x, y, model);
-
+        this.currentHitPoints = model.hitPoints;
         // 3 steering directions - neutral, left, right
         this.steeringDirection = 'neutral';
         this.move = function (moveDirection, directionDelta) {

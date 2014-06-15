@@ -177,7 +177,7 @@ var GameEngine = (function () {
     }
 
 
-    function checkForBulletHit() {
+    function checkForCollision() {
         var bulletListLength = bullets.length,
             currentBullet,
             enemyPlanesListLength = enemyPlanes.length,
@@ -194,6 +194,7 @@ var GameEngine = (function () {
                         bullets.splice(i, 1);
                         i--;
                         bulletListLength = bullets.length;
+                        animationManager.triggerExplosion(currentEnemyPlane.x, currentEnemyPlane.y, currentEnemyPlane.model.width, currentEnemyPlane.model.height);
                         enemyPlanes.splice(j, 1);
                         j--;
                         enemyPlanesListLength = enemyPlanes.length;
@@ -201,19 +202,43 @@ var GameEngine = (function () {
                         // TODO LOGIC FOR EXPLOSION
                     }
                 }
-            } else {
-                if (currentBullet.direction === 'down') {
-                    if (currentBullet.y + currentBullet.model.height >= player.y &&
-                        currentBullet.x + currentBullet.model.width >= player.x &&
-                        currentBullet.x <= player.x + player.plane.model.width) {
-                        bullets.splice(i, 1);
-                        i--;
-                        bulletListLength = bullets.length;
+            } else if (currentBullet.direction === GameObject.bulletDirectionsEnum.down) {
+                if (currentBullet.y + currentBullet.model.height >= player.plane.y &&
+                    currentBullet.x + currentBullet.model.width >= player.plane.x &&
+                    currentBullet.x <= player.plane.x + player.plane.model.width) {
+                    bullets.splice(i, 1);
+                    i--;
+                    bulletListLength = bullets.length;
+                    player.plane.currentHitPoints -= currentBullet.model.damage;
+                    if (player.plane.currentHitPoints <= 0) {
                         player.plane.isAlive = false; //TODO Maybe has to be changed with other game logic
+                        animationManager.triggerExplosion(player.plane.x, player.plane.y, player.plane.model.width, player.plane.model.height);
+                        player.plane.currentHitPoints = player.plane.model.hitPoints;
                     }
                 }
             }
+
         }
+        var collision;
+        for (var i = enemyPlanes.length - 1; i >= 0; i--) {
+            currentEnemyPlane = enemyPlanes[i];
+            collision = player.plane.x + player.plane.model.width > currentEnemyPlane.x &&
+            player.plane.x < currentEnemyPlane.x + currentEnemyPlane.model.width &&
+                player.plane.y + player.plane.model.height > currentEnemyPlane.y &&
+            player.plane.y < currentEnemyPlane.y + currentEnemyPlane.model.height;
+
+            if (collision) {
+                animationManager.triggerExplosion(currentEnemyPlane.x, currentEnemyPlane.y, currentEnemyPlane.model.width, currentEnemyPlane.model.height);
+                enemyPlanes.splice(i, 1);
+                player.plane.currentHitPoints -= player.plane.model.hitPoints/2;
+                if (player.plane.currentHitPoints <= 0) {
+                    player.plane.isAlive = false; //TODO Maybe has to be changed with other game logic
+                    animationManager.triggerExplosion(player.plane.x, player.plane.y, player.plane.model.width, player.plane.model.height);
+                    player.plane.currentHitPoints = player.plane.model.hitPoints;
+                }
+            }
+        }
+
     }
 
     // Moving all of the enemy units. At this time only planes
@@ -305,6 +330,7 @@ var GameEngine = (function () {
                     spawnedEnemy = new GameObject.Plane(enemyX, enemyY, enemyModel);
                 } while (detectImminentCollisionBetweenEnemies(spawnedEnemy, enemyPlanes, spawnedEnemy.speed, -1))
                 spawnedEnemy.currentBulletType = GameObject.bulletsEnum.enemyBullet;
+                spawnedEnemy.currentHitPoints = spawnedEnemy.currentHitPoints / 2;
                 enemyPlanes.push(spawnedEnemy)
             }
         }
@@ -337,32 +363,8 @@ var GameEngine = (function () {
     function init() {
         var playerPlane = new GameObject.Plane(300, 400, GameObject.planesEnum.T50);
         player = new playerModule.Player("Stamat", playerPlane);
-
-        //for (var i = 0; i < 3; i += 1) {
-        //    var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
-        //    testEnemy.ySpeed = ((Math.random() * 4) + 1) | 0;
-        //    enemyPlanes.push(testEnemy);
-        //}
-
         animFrame(gameLoop);
     }
-
-    // Idea - Game loop with timestamp for runing the game more smothly
-    // var now,delta, last = timestamp()
-    // Timer - used for making the game loop run smoothly.
-    //function timestamp() {
-    //    return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
-    //}
-    //function gameLoop() {
-    //    now = timestamp();
-    //    delta = Math.min(1,(now - last) / 1000); // capping delta to 1 sec if for example the browser loses focus.
-
-    //    update(delta);
-    //    render(delta);
-    //    last = now;
-
-    //    animFrame(gameLoop);
-    //}
 
     // Game logic
     function gameLoop() {
@@ -378,7 +380,7 @@ var GameEngine = (function () {
             //moveEnemyUnits();
             updateBullets();
             respawnEnemies();
-            checkForBulletHit();
+            checkForCollision();
             //checkForCollisions();
         }
     }

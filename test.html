@@ -6,16 +6,19 @@
     <script type="text/javascript" src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v5.1.0.min.js"></script>
     <script src="scripts/raphael.js"></script>
     <style type="text/css">
-        #background, #canvas {
+        #background, #canvas, #kinetic-stage {
             position: absolute;
-            width: 700px; height: 500px;
-            top: 0; left: 0;
+            width: 700px;
+            height: 500px;
+            top: 0;
+            left: 0;
         }
     </style>
 </head>
 <body>
 <div id="background"></div>
 <canvas width="700" height="500" id="canvas"></canvas>
+<div id="kinetic-stage"></div>
 <script src="scripts/game-object.js"></script>
 <script type="text/javascript" src="scripts/player.js"></script>
 <script type="text/javascript" src="scripts/game-engine.js"></script>

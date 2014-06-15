@@ -7,7 +7,16 @@ var animationManager = (function () {
         player,
         enemies,
         bullets,
-        enemiesCount;
+        enemiesCount,
+        explosion,
+        stage = new Kinetic.Stage({
+            container: "kinetic-stage",
+            width: canvas.getAttribute("width"),
+            height: canvas.getAttribute("height"),
+        }),
+        layer = new Kinetic.Layer(),
+        imageObj = new Image(),
+        frameCount = 0;
 
     function drawPlane(plane) {
         if (plane.steeringDirection == 'neutral') {
@@ -36,6 +45,55 @@ var animationManager = (function () {
             ctx.fillRect(bullet.x, bullet.y, bullet.model.width, bullet.model.height);
         }
     }
+    function triggerExplosion(coordinateX,coordinateY,objectWidth,objectHeight) {
+        imageObj.src = "textures/explosion-sprite.png";
+        
+        frameCount = 0;
+        explosion = new Kinetic.Sprite({
+            x: coordinateX,
+            y: coordinateY,
+            width: objectWidth,
+            height: objectHeight,
+            image: imageObj,
+            animation: 'explode',
+            animations :{
+                explode: [
+                    0, 0, 65, 65,
+                    65, 0, 65, 65,
+                    130, 0, 65, 65,
+                    195, 0, 65, 65,
+                    0, 65, 65, 65,
+                    65, 65, 65, 65,
+                    130, 65, 65, 65,
+                    195, 65, 65, 65,
+                    0, 130, 65, 65,
+                    65, 130, 65, 65,
+                    130, 130, 65, 65,
+                    195, 130, 65, 65,
+                    0, 195, 65, 65,
+                    65, 195, 65, 65,
+                    130, 195, 65, 65,
+                    195, 195, 65, 65,
+                ]
+            },
+            frameRate: 7,
+            frameIndex: 0
+        });
+        
+        function onFrameIndexChange() {
+            frameCount++;
+            if (frameCount >= 8) {
+                this.stop();
+                frameCount = 0;
+                layer.remove(this);
+                this.destroy();
+            }
+        }
+        explosion.on("frameIndexChange", onFrameIndexChange)
+        layer.add(explosion);
+        stage.add(layer);
+        explosion.start();
+    }
 
     function render() {
         /*
@@ -59,6 +117,7 @@ var animationManager = (function () {
     }
 
     return {
-        render: render
+        render: render,
+        triggerExplosion: triggerExplosion
     };
 }());
