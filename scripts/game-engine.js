@@ -222,7 +222,8 @@ var GameEngine = (function () {
             random,
             movespeed = GameObject.planesEnum.F16.speed,
             unit,
-            predictedXMovement =[],
+            collisionImmenent,
+            predictedXMovement = [];
 
 
         for (i = 0 ; i < enemiesLength; i++) {
