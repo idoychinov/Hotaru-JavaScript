@@ -188,9 +188,9 @@ var GameEngine = (function () {
             if (currentBullet.direction === GameObject.bulletDirectionsEnum.up) {
                 for (j = 0; j < enemyPlanesListLength; j++) {
                     currentEnemyPlane = enemyPlanes[j];
-                    if (currentBullet.y <= currentEnemyPlane.y + player.plane.model.height &&
-                        currentBullet.x + currentBullet.model.width >= currentEnemyPlane.x &&
-                        currentBullet.x <= currentEnemyPlane.x + player.plane.model.width) {
+                    if ((currentBullet.y <= currentEnemyPlane.y + currentEnemyPlane.model.height) &&
+                        ((currentBullet.x + currentBullet.model.width >= currentEnemyPlane.x) &&
+                        (currentBullet.x <= currentEnemyPlane.x + currentEnemyPlane.model.width))) {
                         bullets.splice(i, 1);
                         i--;
                         bulletListLength = bullets.length;
@@ -211,10 +211,13 @@ var GameEngine = (function () {
                     bulletListLength = bullets.length;
                     player.plane.currentHitPoints -= currentBullet.model.damage;
                     if (player.plane.currentHitPoints <= 0) {
+                        alert('hit');
                         player.plane.isAlive = false; //TODO Maybe has to be changed with other game logic
                         animationManager.triggerExplosion(player.plane.x, player.plane.y, player.plane.model.width, player.plane.model.height);
                         player.plane.currentHitPoints = player.plane.model.hitPoints;
                     }
+
+
                 }
             }
 
