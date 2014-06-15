@@ -181,10 +181,10 @@ var GameEngine = (function () {
             currentEnemyPlane;
 
         for (i = 0; i < bulletListLength; i++) {
-            currentBullet = arguments[i];
-            if (currentBullet.direction === 'up') {
+            currentBullet = bullets[i];
+            if (currentBullet.direction === GameObject.bulletDirectionsEnum.up) {
                 for (j = 0; j < enemyPlanesListLength; j++) {
-                    currentEnemyPlane = arguments[j];
+                    currentEnemyPlane = enemyPlanes[j];
                     if (currentBullet.y <= currentEnemyPlane.y + player.plane.model.height &&
                         currentBullet.x + currentBullet.model.width >= currentEnemyPlane.x &&
                         currentBullet.x <= currentEnemyPlane.x + player.plane.model.width) {
@@ -218,13 +218,15 @@ var GameEngine = (function () {
         var enemiesLength = enemyPlanes.length,
             random,
 			movespeed = GameObject.planesEnum.F16.speed,
-            unit;// = new GameObject.Plane(0, 0);
+            unit,
+			collisionImmenent;
 
         for (i = enemiesLength - 1; i >= 0 ; i--) {
             unit = enemyPlanes[i];
 
             //AI for moving at players direction
-            if (i > 0 && detectImminentCollisionBetweenEnemies(unit, enemyPlanes, movespeed * 3)) {
+            collisionImmenent = detectImminentCollisionBetweenEnemies(unit, enemyPlanes, movespeed,i);
+            if (i > 0 && collisionImmenent) {
                 unit.steeringDirection = "neutral";
             } else {
 
@@ -298,11 +300,12 @@ var GameEngine = (function () {
     }
 
     // UNFINISHED
-    function detectImminentCollisionBetweenEnemies(enemy, enemyList, detectionDistance) {
+    function detectImminentCollisionBetweenEnemies(currentEnemy, enemyList, detectionDistance,indexToSkip) {
 
         for (var i = 0; i < enemyList.length; i++) {
-            if (enemy !== enemyList[i]) {
-                if (enemy.x + detectionDistance >= enemyList[i].x || enemy.x - detectionDistance <= enemyList[i].x) {
+            if (indexToSkip !== i) {
+                if (currentEnemy.x + currentEnemy.model.width + detectionDistance >= enemyList[i].x
+                    || currentEnemy.x - detectionDistance <= enemyList[i].x + enemyList[i].model.width) {
                     return true;
                 }
             }
@@ -322,13 +325,16 @@ var GameEngine = (function () {
         // check if there is defined spawn rate for the current numer of enemies and if there is compere it to the treshhold for spawning new enemy
         if (!isNaN(enemySpawnChanceRates[enemiesLength])) {
             if (enemySpawnChanceRates[enemiesLength] > spawnChanceTreshhold) {
-                enemyX = (Math.random() * canvas.width + 1) | 0;
-                if (enemyX > canvas.width - enemyModel.width) {
-                    enemyX = canvas.width - enemyModel.width;
-                }
-                enemyY = -enemyModel.height;
+                do {
+                    enemyX = (Math.random() * canvas.width + 1) | 0;
 
-                spawnedEnemy = new GameObject.Plane(enemyX, enemyY, enemyModel);
+                    if (enemyX > canvas.width - enemyModel.width) {
+                        enemyX = canvas.width - enemyModel.width;
+                    }
+                    enemyY = -enemyModel.height;
+
+                    spawnedEnemy = new GameObject.Plane(enemyX, enemyY, enemyModel);
+                } while (detectImminentCollisionBetweenEnemies(spawnedEnemy, enemyPlanes, spawnedEnemy.speed*2,-1))
                 spawnedEnemy.currentBulletType = GameObject.bulletsEnum.enemyBullet;
                 enemyPlanes.push(spawnedEnemy)
             }
@@ -402,6 +408,7 @@ var GameEngine = (function () {
         //moveEnemyUnits();
         updateBullets();
         respawnEnemies();
+        checkForBulletHit();
         //checkForCollisions();
     }
 
