@@ -202,15 +202,18 @@ var GameEngine = (function () {
                     }
                 }
             } else {
-                if (currentBullet.direction === 'down') {
-                    if (currentBullet.y + currentBullet.model.height >= player.y &&
-                        currentBullet.x + currentBullet.model.width >= player.x &&
+                if (currentBullet.direction === GameObject.bulletDirectionsEnum.down) {
+                    if (currentBullet.y /*+ currentBullet.model.height*/ >= player.y &&
+                        currentBullet.x /*+ currentBullet.model.width*/ >= player.x &&
                         currentBullet.x <= player.x + player.plane.model.width) {
                         bullets.splice(i, 1);
                         i--;
                         bulletListLength = bullets.length;
+                        alert('hit');
                         player.plane.isAlive = false; //TODO Maybe has to be changed with other game logic
                     }
+
+
                 }
             }
         }
