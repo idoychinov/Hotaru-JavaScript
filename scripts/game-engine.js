@@ -214,64 +214,84 @@ var GameEngine = (function () {
     }
 
     // Moving all of the enemy units. At this time only planes
-    function moveEnemyUnits() {
+    function updateEnemyUnits() {
         var enemiesLength = enemyPlanes.length,
             random,
-			movespeed = 4,
+			movespeed = GameObject.planesEnum.F16.speed,
             unit;// = new GameObject.Plane(0, 0);
 
-        for (i = 0; i < enemiesLength; i++) {
+        for (i = enemiesLength-1; i >=0 ; i--) {
             unit = enemyPlanes[i];
 
-            if (!unit.lastMove) {
-                unit.lastMove = 'right';
+            //AI for moving at players direction
+            if(unit.x>player.plane.x){
+                unit.steeringDirection = "left";
+                unit.x -= unit.model.speed;
+            } else if (unit.x < player.plane.x) {
+                unit.steeringDirection = "right";
+                unit.x += unit.model.speed;
+            } else {
+                unit.steeringDirection = "neutral";
+
+            }
+            unit.y += unit.model.speed;
+
+
+            //Check if still in canvas
+            if (unit.y < -unit.model.height || unit.x < -unit.model.width || unit.y > canvas.height || unit.x > canvas.width) {
+                enemyPlanes.splice(i, 1);
             }
 
-            random = Math.random();
-            if (unit.isAlive === false) {
-                enemyPlanes.splice(i, 1);
-                i--;
-                enemiesLength--;
-            } else {
-                random = Math.random();
-                //Update position X
-                //if (random < 0.9) {
-                random = Math.random();
-                // move on same direction if random < 0.98
-                if (random < 0.98) {
-                    // move
-                    if (unit.lastMove === 'left') {
-                        unit.x -= movespeed;
-                    } else {
-                        unit.x += movespeed;
-                    }
-                } else {
-                    if (unit.lastMove === 'left') {
-                        unit.x += movespeed;
-                        unit.lastMove = 'right';
-                    } else {
-                        unit.x -= movespeed;
-                        unit.lastMove = 'left';
-                    }
-                }
-                //}
-
-                //Update position Y
-                unit.y += unit.ySpeed;
-
-                //Check if still in canvas
-                if (unit.y < -unit.model.height || unit.x < -unit.model.width || unit.y > canvas.height || unit.x > canvas.width) {
-                    enemyPlanes.splice(i, 1);
-                    i--;
-                    enemiesLength--;
-
-                    //var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
-                    //testEnemy.ySpeed = ((Math.random() * 4) + 1) | 0;
-                    //enemyPlanes.push(testEnemy);
-                }
+            if (unit.shotCooldown > 0) {
+                unit.shotCooldown--;
+            }
+            if (unit.shotCooldown == 0) {
+                random = (Math.random() * 6) | 0;
+                bullets.push(unit.fireBullet(GameObject.bulletDirectionsEnum.down));
+                unit.shotCooldown = unit.currentBulletType.rateOfFire*(5+random);
             }
         }
+            //if (!unit.lastMove) {
+            //    unit.lastMove = 'right';
+            //}
+
+            //random = Math.random();
+            //if (unit.isAlive === false) {
+            //    enemyPlanes.splice(i, 1);
+            //    i--;
+            //    enemiesLength--;
+            //} else {
+            //    random = Math.random();
+            //    //Update position X
+            //    //if (random < 0.9) {
+            //    random = Math.random();
+            //    // move on same direction if random < 0.98
+            //    if (random < 0.98) {
+            //        // move
+            //        if (unit.lastMove === 'left') {
+            //            unit.x -= movespeed;
+            //        } else {
+            //            unit.x += movespeed;
+            //        }
+            //    } else {
+            //        if (unit.lastMove === 'left') {
+            //            unit.x += movespeed;
+            //            unit.lastMove = 'right';
+            //        } else {
+            //            unit.x -= movespeed;
+            //            unit.lastMove = 'left';
+            //        }
+            //    }
+            //}
+
+            //Update position Y
+            //unit.y += unit.ySpeed;
+            //var testEnemy = new GameObject.Plane((Math.random() * 400) | 0, (-(Math.random() * 300) - 100) | 0, GameObject.planesEnum.F16);
+            //testEnemy.ySpeed = ((Math.random() * 4) + 1) | 0;
+            //enemyPlanes.push(testEnemy);
+         
     }
+
 
     function RespawnEnemies() {
         var enemyX,
@@ -285,14 +305,14 @@ var GameEngine = (function () {
         // check if there is defined spawn rate for the current numer of enemies and if there is compere it to the treshhold for spawning new enemy
         if (!isNaN(enemySpawnChanceRates[enemiesLength])) {
             if (enemySpawnChanceRates[enemiesLength] > spawnChanceTreshhold) {
-                enemyX = (Math.random() * canvas.width+1) | 0;
+                enemyX = (Math.random() * canvas.width + 1) | 0;
                 if (enemyX > canvas.width - enemyModel.width) {
                     enemyX = canvas.width - enemyModel.width;
                 }
                 enemyY = -enemyModel.height;
 
                 spawnedEnemy = new GameObject.Plane(enemyX, enemyY, enemyModel);
-                spawnedEnemy.ySpeed = ((Math.random() * 4) + 1) | 0;
+                spawnedEnemy.currentBulletType = GameObject.bulletsEnum.enemyBullet;
                 enemyPlanes.push(spawnedEnemy)
             }
         }
@@ -306,6 +326,8 @@ var GameEngine = (function () {
             bullets.push(player.plane.fireBullet(GameObject.bulletDirectionsEnum.up));
             player.plane.shotCooldown = player.plane.currentBulletType.rateOfFire;
         }
+
+        
     }
 
     function getPlayer() {
@@ -359,8 +381,8 @@ var GameEngine = (function () {
 
     function update() {
         updatePlayerPlane();
-        //updateEnemyUnits
-        moveEnemyUnits();
+        updateEnemyUnits();
+        //moveEnemyUnits();
         updateBullets();
         RespawnEnemies();
         //checkForCollisions();

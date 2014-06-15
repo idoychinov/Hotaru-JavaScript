@@ -8,11 +8,12 @@ var GameObject = (function () {
     // Enumeration with the different bulletTypes. Fire riate lower == faster (less ticks needed to go out of cooldown)
         bulletTypes = {
             classic: { model: 'classic.png', speed: 10, damage: 15, width: 6,height: 12, rateOfFire:20 },
-            advanced: { model: 'classic.png', speed: 10, damage: 15, width: 10, height: 20, rateOfFire:30 }
+            advanced: { model: 'classic.png', speed: 10, damage: 15, width: 10, height: 20, rateOfFire: 30 },
+            enemyBullet: { model: 'classic.png', speed: 5, damage: 15, width: 6, height: 12, rateOfFire:30 }
         },
         planeTypes = {
             T50: { model: sukhoi, speed: 1, bulletType: bulletTypes.classic, width: 50, height: 74},
-            F16: { model: f16, speed: 5, bulletType: bulletTypes.classic, width: 67, height: 105 }
+            F16: { model: f16, speed: 1, bulletType: bulletTypes.classic, width: 67, height: 105 }
 
         },
         bulletDirections = { up: 'up', down: 'down' };
@@ -69,8 +70,8 @@ var GameObject = (function () {
         this.currentBulletType = planeModel.bulletType;
         this.fireBullet = function (direction) {
             var offsetY = 1;
-            if (direction === bulletDirections.up) {
-                offsetY = -offsetY;
+            if (direction === bulletDirections.down) {
+                offsetY = this.model.height+1;
             }
             var currentBullet = new Bullet(this.x + (this.model.width / 2) - (this.currentBulletType.width / 2), this.y + offsetY, this.currentBulletType, direction); //TODO DELTA Y FOR THE BULLET
             return currentBullet;
@@ -89,6 +90,7 @@ var GameObject = (function () {
 
     return {
         planesEnum: planeTypes,
+        bulletsEnum : bulletTypes,
         bulletDirectionsEnum: bulletDirections,
         Plane: Plane
     };
