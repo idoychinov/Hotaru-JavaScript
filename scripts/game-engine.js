@@ -219,28 +219,71 @@ var GameEngine = (function () {
             random,
 			movespeed = GameObject.planesEnum.F16.speed,
             unit,
+            predictedXMovement =[],
 			collisionImmenent;
+
+
+        for (i = 0 ; i < enemiesLength; i++) {
+            unit = enemyPlanes[i];
+            collisionImmenent = detectImminentCollisionBetweenEnemies(unit, enemyPlanes, movespeed * 50, i);
+            if (unit.x > player.plane.x) {
+                if (collisionImmenent < 0) {
+                    unit.steeringDirection = "neutral";
+                } else if (collisionImmenent >= 0) {
+                    unit.steeringDirection = "left";
+                }
+                
+            } else if (unit.x < player.plane.x) {
+                if (collisionImmenent > 0) {
+                    unit.steeringDirection = "neutral";
+                } else if (collisionImmenent <= 0) {
+                    unit.steeringDirection = "right";
+                }
+            } else {
+                unit.steeringDirection = "neutral";
+            }
+
+            if (unit.steeringDirection = "left") {
+                unit.x -= unit.model.speed;
+            } else if (unit.steeringDirection = "right") {
+                unit.x += unit.model.speed;
+            }
+        }
 
         for (i = enemiesLength - 1; i >= 0 ; i--) {
             unit = enemyPlanes[i];
 
             //AI for moving at players direction
-            collisionImmenent = detectImminentCollisionBetweenEnemies(unit, enemyPlanes, movespeed,i);
-            if (i > 0 && collisionImmenent) {
-                unit.steeringDirection = "neutral";
-            } else {
+            //collisionImmenent = detectImminentCollisionBetweenEnemies(unit, enemyPlanes, movespeed * 50, i);
+            
+            ////if (collisionImmenent > 0) {
+            ////    unit.x += unit.model.speed;
+            ////    unit.steeringDirection = "right";
+            ////} else if (collisionImmenent < 0) {
+            ////    unit.x -= unit.model.speed;
+            ////    unit.steeringDirection = "left";
+            ////}
+            ////else {
 
-                if (unit.x > player.plane.x) {
-                    unit.steeringDirection = "left";
-                    unit.x -= unit.model.speed;
-                } else if (unit.x < player.plane.x) {
-                    unit.steeringDirection = "right";
-                    unit.x += unit.model.speed;
-                } else {
-                    unit.steeringDirection = "neutral";
+            //    if (unit.x > player.plane.x) {
+            //        if (collisionImmenent < 0) {
+            //            unit.x += unit.model.speed;
+            //            unit.steeringDirection = "right";
+            //        }
+            //        unit.steeringDirection = "left";
+            //        unit.x -= unit.model.speed;
+            //    } else if (unit.x < player.plane.x) {
+            //        if (collisionImmenent > 0) {
+            //            unit.x -= unit.model.speed;
+            //            unit.steeringDirection = "left";
+            //        }
+            //        unit.steeringDirection = "right";
+            //        unit.x += unit.model.speed;
+            //    } else {
+            //        unit.steeringDirection = "neutral";
 
-                }
-            }
+            //    }
+            ////}
             unit.y += unit.model.speed;
 
 
@@ -300,17 +343,25 @@ var GameEngine = (function () {
     }
 
     // UNFINISHED
-    function detectImminentCollisionBetweenEnemies(currentEnemy, enemyList, detectionDistance,indexToSkip) {
+    function detectImminentCollisionBetweenEnemies(currentEnemy, enemyList, detectionDistance, indexToSkip) {
+        var collisionLeft,
+            collisionRight;
 
         for (var i = 0; i < enemyList.length; i++) {
             if (indexToSkip !== i) {
-                if (currentEnemy.x + currentEnemy.model.width + detectionDistance >= enemyList[i].x
-                    || currentEnemy.x - detectionDistance <= enemyList[i].x + enemyList[i].model.width) {
-                    return true;
+                collisionLeft = enemyList[i].x + enemyList[i].model.width + detectionDistance > currentEnemy.x;
+                collisionRight = currentEnemy.x + currentEnemy.model.width + detectionDistance > enemyList[i].x;
+
+                if (collisionLeft && collisionRight) {
+                    if (collisionLeft) {
+                        return -1;
+                    } else {
+                        return 1;
+                    }
                 }
             }
         }
-        return false;
+        return 0;
     }
 
     function respawnEnemies() {
@@ -334,7 +385,7 @@ var GameEngine = (function () {
                     enemyY = -enemyModel.height;
 
                     spawnedEnemy = new GameObject.Plane(enemyX, enemyY, enemyModel);
-                } while (detectImminentCollisionBetweenEnemies(spawnedEnemy, enemyPlanes, spawnedEnemy.speed*2,-1))
+                } while (detectImminentCollisionBetweenEnemies(spawnedEnemy, enemyPlanes, spawnedEnemy.speed * 50, -1))
                 spawnedEnemy.currentBulletType = GameObject.bulletsEnum.enemyBullet;
                 enemyPlanes.push(spawnedEnemy)
             }
