@@ -188,9 +188,9 @@ var GameEngine = (function () {
             if (currentBullet.direction === GameObject.bulletDirectionsEnum.up) {
                 for (j = 0; j < enemyPlanesListLength; j++) {
                     currentEnemyPlane = enemyPlanes[j];
-                    if (currentBullet.y <= currentEnemyPlane.y + player.plane.model.height &&
-                        currentBullet.x + currentBullet.model.width >= currentEnemyPlane.x &&
-                        currentBullet.x <= currentEnemyPlane.x + player.plane.model.width) {
+                    if ((currentBullet.y <= currentEnemyPlane.y + currentEnemyPlane.model.height) &&
+                        ((currentBullet.x + currentBullet.model.width >= currentEnemyPlane.x) &&
+                        (currentBullet.x <= currentEnemyPlane.x + currentEnemyPlane.model.width))) {
                         bullets.splice(i, 1);
                         i--;
                         bulletListLength = bullets.length;
