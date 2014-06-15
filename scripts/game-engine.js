@@ -180,7 +180,7 @@ var GameEngine = (function () {
     function checkForBulletHit() {
         var bulletListLength = bullets.length,
             currentBullet,
-            enemyPlanesListLength = enemyPlanes.lenth,
+            enemyPlanesListLength = enemyPlanes.length,
             currentEnemyPlane;
 
         for (i = 0; i < bulletListLength; i++) {
