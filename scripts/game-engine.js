@@ -1,4 +1,4 @@
-/*global Kinetic, GameObject, playerModule, animationManager */
+/*global Kinetic, GameObject, playerModule, animationManager, BackgroundLooper */
 /*jslint plusplus: true */
 /*jslint browser:true */
 var GameEngine = (function () {
@@ -10,6 +10,7 @@ var GameEngine = (function () {
         animFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame,
         player,
         handle,
+        isPaused = false,
         movementDrections = { left: false, right: false, up: false, down: false },
         playerIsShooting = false;
 
@@ -21,7 +22,6 @@ var GameEngine = (function () {
     //function updatePlanePosition(plane, direction) {
     //    plane.move(direction);
     //}
-
 
 
     function performMovement() {
@@ -83,37 +83,40 @@ var GameEngine = (function () {
         if (!e) {
             e = window.event;
         }
-        switch (e.keyCode) {
 
-            //Space -> pausing the game
-            case 27:
-                //isPaused = !isPaused;
-                //left
-                break;
+        if (e.keyCode === 27) {
+            isPaused = !isPaused;
+            BackgroundLooper.pause();
+        }
+
+        if (!isPaused) {
+            console.log('fail');
+            switch (e.keyCode) {
                 // Space -> shoot TODO
-            case 32:
-                playerIsShooting = true;
-                break;
+                case 32:
+                    playerIsShooting = true;
+                    break;
                 // Ctrl -> special (bomb limited uses) TODO
-            case 17:
+                case 17:
 
-                break;
-            case 37:
-                movementDrections.left = true;
-                performMovement();
-                break;
-            case 38:
-                movementDrections.up = true;
-                performMovement();
-                break;
-            case 39:
-                movementDrections.right = true;
-                performMovement();
-                break;
-            case 40:
-                movementDrections.down = true;
-                performMovement();
-                break;
+                    break;
+                case 37:
+                    movementDrections.left = true;
+                    performMovement();
+                    break;
+                case 38:
+                    movementDrections.up = true;
+                    performMovement();
+                    break;
+                case 39:
+                    movementDrections.right = true;
+                    performMovement();
+                    break;
+                case 40:
+                    movementDrections.down = true;
+                    performMovement();
+                    break;
+            }
         }
     });
 
@@ -217,15 +220,15 @@ var GameEngine = (function () {
     function updateEnemyUnits() {
         var enemiesLength = enemyPlanes.length,
             random,
-			movespeed = GameObject.planesEnum.F16.speed,
+            movespeed = GameObject.planesEnum.F16.speed,
             unit,
-			collisionImmenent;
+            collisionImmenent;
 
-        for (i = enemiesLength - 1; i >= 0 ; i--) {
+        for (i = enemiesLength - 1; i >= 0; i--) {
             unit = enemyPlanes[i];
 
             //AI for moving at players direction
-            collisionImmenent = detectImminentCollisionBetweenEnemies(unit, enemyPlanes, movespeed,i);
+            collisionImmenent = detectImminentCollisionBetweenEnemies(unit, enemyPlanes, movespeed, i);
             if (i > 0 && collisionImmenent) {
                 unit.steeringDirection = "neutral";
             } else {
@@ -300,7 +303,7 @@ var GameEngine = (function () {
     }
 
     // UNFINISHED
-    function detectImminentCollisionBetweenEnemies(currentEnemy, enemyList, detectionDistance,indexToSkip) {
+    function detectImminentCollisionBetweenEnemies(currentEnemy, enemyList, detectionDistance, indexToSkip) {
 
         for (var i = 0; i < enemyList.length; i++) {
             if (indexToSkip !== i) {
@@ -334,7 +337,7 @@ var GameEngine = (function () {
                     enemyY = -enemyModel.height;
 
                     spawnedEnemy = new GameObject.Plane(enemyX, enemyY, enemyModel);
-                } while (detectImminentCollisionBetweenEnemies(spawnedEnemy, enemyPlanes, spawnedEnemy.speed*2,-1))
+                } while (detectImminentCollisionBetweenEnemies(spawnedEnemy, enemyPlanes, spawnedEnemy.speed * 2, -1))
                 spawnedEnemy.currentBulletType = GameObject.bulletsEnum.enemyBullet;
                 enemyPlanes.push(spawnedEnemy)
             }
@@ -403,20 +406,22 @@ var GameEngine = (function () {
     }
 
     function update() {
-        updatePlayerPlane();
-        updateEnemyUnits();
-        //moveEnemyUnits();
-        updateBullets();
-        respawnEnemies();
-        checkForBulletHit();
-        //checkForCollisions();
+        if (!isPaused) {
+            updatePlayerPlane();
+            updateEnemyUnits();
+            //moveEnemyUnits();
+            updateBullets();
+            respawnEnemies();
+            checkForBulletHit();
+            //checkForCollisions();
+        }
     }
 
     function render() {
-        animationManager.render();
+        if (!isPaused) {
+            animationManager.render();
+        }
     }
-
-
 
     return {
         init: init,

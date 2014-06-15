@@ -1,44 +1,47 @@
-var BackgroundLooper = (function() {
+var BackgroundLooper = (function () {
     "use strict";
-    
+
     /* GLOBAL CONSTANTS */
     var FIELD_WIDTH = 700;
     var FIELD_HEIGHT = 500;
     var DEF_PATTERN_HEIGHT = 500;
-    
+    var isPaused = false;
+    var playingField;
+
     // Background stage
     var stage = new Kinetic.Stage({
         container: "background",
         width: FIELD_WIDTH,
         height: FIELD_HEIGHT
     });
-    
+
     // Predefined loops
     var loops = [
         new BackgroundLoop("pattern.png", "transition.png",
-            function(loops) {
+            function (loops) {
                 if (loops == 2) return true; else return false;
             }
         ),
 
         new BackgroundLoop("pattern2.png", "transition2.png",
-            function(loops) {
+            function (loops) {
                 if (loops == 6) return true; else return false;
             }
         )
     ];
-    
+
 
     /* static class KineticUtility */
-    function KineticUtility() {};
+    function KineticUtility() {
+    };
 
     /*
-    * @returns: Image ready to be attached to layer
-    */
-    KineticUtility.createImage = function(source, imageOptions) {
+     * @returns: Image ready to be attached to layer
+     */
+    KineticUtility.createImage = function (source, imageOptions) {
         var imageObject = new Image();
 
-        imageObject.onload = function() {
+        imageObject.onload = function () {
             var image = new Kinetic.Image(imageOptions);
 
             image.image = imageObject;
@@ -79,7 +82,7 @@ var BackgroundLooper = (function() {
         this.transition;
         this.patternImg;
         this.transitionImg;
-        
+
         this.stage = stage;
         this.layer = new Kinetic.Layer();
 
@@ -88,7 +91,7 @@ var BackgroundLooper = (function() {
         this.drawStage();
     }
 
-    LoopManager.prototype.initializeFields = function() {
+    LoopManager.prototype.initializeFields = function () {
         var initial = this.loops[0];
         var imageOptions = {
             x: 0,
@@ -108,11 +111,11 @@ var BackgroundLooper = (function() {
         this.layer.add(this.transition);
     };
 
-    LoopManager.prototype.drawStage = function() {
+    LoopManager.prototype.drawStage = function () {
         this.stage.add(this.layer);
     };
 
-    LoopManager.prototype.generatePatternContainer = function(image, startPos) {    
+    LoopManager.prototype.generatePatternContainer = function (image, startPos) {
         return new Kinetic.Rect({
             x: 0,
             y: startPos,
@@ -123,7 +126,7 @@ var BackgroundLooper = (function() {
         });
     };
 
-    LoopManager.prototype.executeLooping = function() {
+    LoopManager.prototype.executeLooping = function () {
         var yOffset = this.pattern.attrs.fillPatternOffsetY - 1;
 
         // Resets the offset on loop
@@ -133,14 +136,14 @@ var BackgroundLooper = (function() {
         }
 
         // Triggers a transition
-        if (this.loops[this.index].transitionCondition(this.loopCount)) {        
+        if (this.loops[this.index].transitionCondition(this.loopCount)) {
             this.isInTransition = true;
         }
 
         this.pattern.fillPatternOffset({y: yOffset});
     };
 
-    LoopManager.prototype.executeTransition = function() {
+    LoopManager.prototype.executeTransition = function () {
         var patternY = this.pattern.attrs.y + 1,
             transitionY = this.transition.attrs.y + 1;
 
@@ -171,37 +174,49 @@ var BackgroundLooper = (function() {
         }
     };
 
-    LoopManager.prototype.startMovement = function() {
+    LoopManager.prototype.startMovement = function () {
         // Background looper
-        if (!this.isInTransition) {
-            this.executeLooping();
+        if (!isPaused) {
+            if (!this.isInTransition) {
+                this.executeLooping();
+            }
+            else {
+                var isLast = this.executeTransition();
+
+                if (isLast) return;
+            }
+
+            this.layer.batchDraw();
+
+            var self = this;
+            setTimeout(function () {
+                self.startMovement();
+            }, this.LOOP_SPEED);
         }
-        else {
-            var isLast = this.executeTransition();
-
-            if (isLast) return;
-        }
-
-        this.layer.batchDraw();
-
-        var self = this;
-        setTimeout(function() { self.startMovement(); }, this.LOOP_SPEED);
     };
 
     /* } */
-    
+
     function run() {
         try {
-            var playingField = new LoopManager(loops, stage);
+            playingField = new LoopManager(loops, stage);
             playingField.startMovement();
         }
-        catch(error) {
+        catch (error) {
             console.log(error);
             console.trace();
         }
     }
-    
+
+    function pause() {
+        isPaused = !isPaused;
+        if (!isPaused) {
+            playingField.startMovement();
+        }
+    }
+
     return {
-        run: run
+        run: run,
+        pause: pause
     };
 })();
