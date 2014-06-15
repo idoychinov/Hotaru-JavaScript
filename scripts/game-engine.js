@@ -1,4 +1,4 @@
-/*global Kinetic, GameObject, playerModule, animationManager */
+/*global Kinetic, GameObject, playerModule, animationManager, BackgroundLooper */
 /*jslint plusplus: true */
 /*jslint browser:true */
 var GameEngine = (function () {
@@ -10,6 +10,7 @@ var GameEngine = (function () {
         animFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame,
         player,
         handle,
+        isPaused = false,
         movementDrections = { left: false, right: false, up: false, down: false },
         playerIsShooting = false;
 
@@ -21,7 +22,6 @@ var GameEngine = (function () {
     //function updatePlanePosition(plane, direction) {
     //    plane.move(direction);
     //}
-
 
 
     function performMovement() {
@@ -83,37 +83,40 @@ var GameEngine = (function () {
         if (!e) {
             e = window.event;
         }
-        switch (e.keyCode) {
 
-            //Space -> pausing the game
-            case 27:
-                //isPaused = !isPaused;
-                //left
-                break;
+        if (e.keyCode === 27) {
+            isPaused = !isPaused;
+            BackgroundLooper.pause();
+        }
+
+        if (!isPaused) {
+            console.log('fail');
+            switch (e.keyCode) {
                 // Space -> shoot TODO
-            case 32:
-                playerIsShooting = true;
-                break;
+                case 32:
+                    playerIsShooting = true;
+                    break;
                 // Ctrl -> special (bomb limited uses) TODO
-            case 17:
+                case 17:
 
-                break;
-            case 37:
-                movementDrections.left = true;
-                performMovement();
-                break;
-            case 38:
-                movementDrections.up = true;
-                performMovement();
-                break;
-            case 39:
-                movementDrections.right = true;
-                performMovement();
-                break;
-            case 40:
-                movementDrections.down = true;
-                performMovement();
-                break;
+                    break;
+                case 37:
+                    movementDrections.left = true;
+                    performMovement();
+                    break;
+                case 38:
+                    movementDrections.up = true;
+                    performMovement();
+                    break;
+                case 39:
+                    movementDrections.right = true;
+                    performMovement();
+                    break;
+                case 40:
+                    movementDrections.down = true;
+                    performMovement();
+                    break;
+            }
         }
     });
 
@@ -177,7 +180,7 @@ var GameEngine = (function () {
     function checkForBulletHit() {
         var bulletListLength = bullets.length,
             currentBullet,
-            enemyPlanesListLength = enemyPlanes.lenth,
+            enemyPlanesListLength = enemyPlanes.length,
             currentEnemyPlane;
 
         for (i = 0; i < bulletListLength; i++) {
@@ -217,10 +220,9 @@ var GameEngine = (function () {
     function updateEnemyUnits() {
         var enemiesLength = enemyPlanes.length,
             random,
-			movespeed = GameObject.planesEnum.F16.speed,
+            movespeed = GameObject.planesEnum.F16.speed,
             unit,
             predictedXMovement =[],
-			collisionImmenent;
 
 
         for (i = 0 ; i < enemiesLength; i++) {
@@ -454,20 +456,22 @@ var GameEngine = (function () {
     }
 
     function update() {
-        updatePlayerPlane();
-        updateEnemyUnits();
-        //moveEnemyUnits();
-        updateBullets();
-        respawnEnemies();
-        checkForBulletHit();
-        //checkForCollisions();
+        if (!isPaused) {
+            updatePlayerPlane();
+            updateEnemyUnits();
+            //moveEnemyUnits();
+            updateBullets();
+            respawnEnemies();
+            checkForBulletHit();
+            //checkForCollisions();
+        }
     }
 
     function render() {
-        animationManager.render();
+        if (!isPaused) {
+            animationManager.render();
+        }
     }
-
-
 
     return {
         init: init,
