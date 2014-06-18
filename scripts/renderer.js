@@ -42,7 +42,7 @@ var animationManager = (function () {
         bulletCount = bullets.length;
         for (i = 0; i < bulletCount; i++) {
             var bullet = bullets[i];
-            ctx.fillRect(bullet.x, bullet.y, bullet.model.width, bullet.model.height);
+            ctx.drawImage(bullet.model.model, bullet.x, bullet.y, bullet.model.width, bullet.model.height);
         }
     }
     function triggerExplosion(coordinateX, coordinateY, objectWidth, objectHeight) {
