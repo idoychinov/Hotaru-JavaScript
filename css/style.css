@@ -1,0 +1,26 @@
+body {
+    background: #34495E;
+}
+
+#logo {
+    position: relative;
+    background: url(../textures/game_logo.svg);
+    width: 250px; height: 130px;
+    margin: 0 auto;
+    margin-top: 25px;
+}
+
+#game-holder {
+    position: relative;
+    width: 700px; height: 500px;
+    margin: 0 auto;
+    top: 25px;
+}
+
+#background, #canvas, #kinetic-stage {
+    position: absolute;
+    width: inherit;
+    height: inherit;
+    top: 0;
+    left: 0;
+}

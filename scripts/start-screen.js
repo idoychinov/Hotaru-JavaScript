@@ -23,7 +23,7 @@ var StartScreen = (function () {
             "text-anchor": "middle",
             "fill": "green",
             "stroke-width": "4"
-        })
+        });
 
         gameName = paper.text(350, 700, "2015");
         gameName.attr({
@@ -34,7 +34,7 @@ var StartScreen = (function () {
             "fill-opacity": 0,
             "stroke": "white",
             "stroke-width": "4"
-        })
+        });
         animateGameName();
 
         function animateGameName() {
@@ -56,7 +56,7 @@ var StartScreen = (function () {
                 "font-family": fontFamily,
                 "text-anchor": "middle",
                 "fill":"white"
-            })
+            });
 
             startButton = paper.text(350, 310, "START ");
             startButton.attr({
@@ -66,7 +66,7 @@ var StartScreen = (function () {
                 "text-anchor": "middle",
                 "fill": "white",
                 "fill-opacity": 1
-            })
+            });
             fadeOut();
             
             function fadeIn() {
@@ -94,4 +94,4 @@ var StartScreen = (function () {
     return {
         init : init
     }
-}())
+}());

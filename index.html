@@ -5,28 +5,26 @@
     <title></title>
     <script type="text/javascript" src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v5.1.0.min.js"></script>
     <script src="scripts/raphael.js"></script>
-    <style type="text/css">
-        #background, #canvas, #kinetic-stage {
-            position: absolute;
-            width: 700px;
-            height: 500px;
-            top: 0;
-            left: 0;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 <body>
-<div id="background"></div>
-<canvas width="700" height="500" id="canvas"></canvas>
-<div id="kinetic-stage"></div>
-<script src="scripts/game-object.js"></script>
-<script type="text/javascript" src="scripts/player.js"></script>
-<script type="text/javascript" src="scripts/game-engine.js"></script>
-<script type="text/javascript" src="scripts/background-looper.js"></script>
-<script type="text/javascript" src="scripts/test-renderer.js"></script>
-<script src="scripts/start-screen.js"></script>
-<script type="text/javascript">
-    StartScreen.init(0,0,700,500);
-</script>
+    <div id="logo"></div>
+    <div id="game-holder">
+        <div id="background"></div>
+        <canvas width="700" height="500" id="canvas"></canvas>
+        <div id="kinetic-stage"></div>
+    </div>
+
+    <script src="scripts/game-object.js"></script>
+    <script type="text/javascript" src="scripts/player.js"></script>
+    <script type="text/javascript" src="scripts/game-engine.js"></script>
+    <script type="text/javascript" src="scripts/background-looper.js"></script>
+    <script type="text/javascript" src="scripts/test-renderer.js"></script>
+    <script src="scripts/start-screen.js"></script>
+
+    <script type="text/javascript">
+        var startScreenLeft = (window.innerWidth - 700) / 2;
+        StartScreen.init(startScreenLeft, 180, 700, 500);
+    </script>
 </body>
 </html>
