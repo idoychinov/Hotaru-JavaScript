@@ -1,7 +1,7 @@
 var BackgroundLooper = (function () {
     "use strict";
 
-    /* CONSTANTS */
+    /* GLOBAL CONSTANTS */
     var FIELD_WIDTH = 700;
     var FIELD_HEIGHT = 500;
     var isPaused = false;
@@ -14,34 +14,27 @@ var BackgroundLooper = (function () {
         height: FIELD_HEIGHT
     });
 
-    /* enum */ var LoopPattern = {
-        water: {
-            pattern: "water.png",
-            transitionClouds: "water-clouds.png"
-        },
-
-        clouds: {
-            pattern: "clouds.png",
-            transitionWater: "clouds-water.png"
-        }
-    };
-
     // Predefined loops
-    // TODO: Implement scoring
     var loops = [
-        new BackgroundLoop(LoopPattern.water.pattern, LoopPattern.water.transitionClouds,
-            function (loops) { if (loops == 4) return true; else return false; }
+        new BackgroundLoop("water.png", "water-clouds.png",
+            function (loops) {
+                if (loops == 4) return true; else return false;
+            }
         ),
 
-        new BackgroundLoop(LoopPattern.clouds.pattern, LoopPattern.clouds.transitionWater,
-            function (loops) { if (loops == 10) return true; else return false; }
+        new BackgroundLoop("clouds.png", "clouds-water.png",
+            function (loops) {
+                if (loops == 8) {
+                    return true;
+                } else return false;
+            }
         ),
 
-        new BackgroundLoop(LoopPattern.water.pattern, LoopPattern.water.transitionClouds,
-            function (loops) { if (loops == 15) return true; else return false; }
-        ),
-
-        new BackgroundLoop(LoopPattern.clouds.pattern, LoopPattern.clouds.transitionWater, function () { return false;})
+        new BackgroundLoop("water.png", "water-clouds.png",
+            function () {
+                return false;
+            }
+        )
     ];
 
 

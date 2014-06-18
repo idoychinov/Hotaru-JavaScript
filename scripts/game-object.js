@@ -3,31 +3,27 @@
 /*jslint browser:true */
 var GameObject = (function () {
     'use strict';
-    var IMG_DIR_PREFIX = "textures/",
-        sukhoi = new Image(), //142  / 98  / 98 /210
+    var sukhoi = new Image(), //142  / 98  / 98 /210
         f16 = new Image(),
-        mgProjectile = new Image(),
-        missile = new Image(),
-
+        classic = new Image(),
+        enemyBullet = new Image(),
     // Enumeration with the different bulletTypes. Fire riate lower == faster (less ticks needed to go out of cooldown)
-        bulletTypes = {
-            classic: { model: mgProjectile, speed: 10, damage: 15, width: 6,height: 12, rateOfFire:20 },
-            advanced: { model: missile, speed: 5, damage: 15, width: 7, height: 34, rateOfFire: 40 },
-            enemyBullet: { model: mgProjectile, speed: 5, damage: 15, width: 6, height: 12, rateOfFire:30 }
-        },
-        planeTypes = {
-            T50: { model: sukhoi, speed: 1, bulletType: bulletTypes.classic, width: 65, height: 96, hitPoints: 70 },
-            F16: { model: f16, speed: 1, bulletType: bulletTypes.classic, width: 64, height: 96, hitPoints: 40 }
+    bulletTypes = {
+        classic: { model: classic, speed: 10, damage: 15, width: 10, height: 16, rateOfFire: 20 },
+        advanced: { model: classic, speed: 10, damage: 15, width: 10, height: 20, rateOfFire: 30 },
+        enemyBullet: { model: enemyBullet, speed: 5, damage: 15, width: 10, height: 16, rateOfFire: 30 }
+    },
+    planeTypes = {
+        T50: { model: sukhoi, speed: 1, bulletType: bulletTypes.classic, width: 67, height: 105, hitPoints: 70 },
+        F16: { model: f16, speed: 1, bulletType: bulletTypes.classic, width: 67, height: 105, hitPoints: 30 }
+
     },
     bulletDirections = { up: 'up', down: 'down' };
 
+    sukhoi.src = "textures/sukhoi_sprite.png";
+    f16.src = "textures/f16.png";
     classic.src = 'textures/classic-bullet.png';
     enemyBullet.src = 'textures/enemy-bullet.png';
-
-    mgProjectile.src = IMG_DIR_PREFIX + "mg_projectile.png";
-    missile.src = IMG_DIR_PREFIX + "missile.png";
-    sukhoi.src = IMG_DIR_PREFIX + "sukhoi_sprite.png";
-    f16.src = IMG_DIR_PREFIX + "f16.png";
 
     function GameObject(x, y, model) {
         // X and Y -> top left pixel for the image
