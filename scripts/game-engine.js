@@ -191,6 +191,7 @@ var GameEngine = (function () {
                     if ((currentBullet.y <= currentEnemyPlane.y + currentEnemyPlane.model.height) &&
                         ((currentBullet.x + currentBullet.model.width >= currentEnemyPlane.x) &&
                         (currentBullet.x <= currentEnemyPlane.x + currentEnemyPlane.model.width))) {
+                        player.kills++;
                         currentEnemyPlane.currentHitPoints -= currentBullet.model.damage;
                         bullets.splice(i, 1);
                         i--;
@@ -232,6 +233,7 @@ var GameEngine = (function () {
             player.plane.y < currentEnemyPlane.y + currentEnemyPlane.model.height;
 
             if (collision) {
+                player.kills++;
                 animationManager.triggerExplosion(currentEnemyPlane.x, currentEnemyPlane.y, currentEnemyPlane.model.width, currentEnemyPlane.model.height);
                 enemyPlanes.splice(i, 1);
                 player.plane.currentHitPoints -= player.plane.model.hitPoints / 2;
@@ -388,6 +390,7 @@ var GameEngine = (function () {
         clearAllStates();
         var playerPlane = new GameObject.Plane(300, 400, GameObject.planesEnum.T50);
         player = new playerModule.Player("Stamat", playerPlane);
+        animationManager.drawStatusWindow();
         animFrame(gameLoop);
     }
 

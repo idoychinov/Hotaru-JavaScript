@@ -17,7 +17,7 @@ body {
     top: 25px;
 }
 
-#background, #canvas, #kinetic-stage {
+#background, #canvas, #kinetic-stage, #status-window {
     position: absolute;
     width: inherit;
     height: inherit;

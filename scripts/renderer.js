@@ -16,7 +16,12 @@ var animationManager = (function () {
         }),
         layer = new Kinetic.Layer(),
         imageObj = new Image(),
-        frameCount = 0;
+        frameCount = 0,
+        livesDisplay,
+        hitPointsDisplay,
+        kills,
+        statusWindowBorder,
+        gameStatusPaper;
 
     function drawPlane(plane) {
         if (plane.steeringDirection == 'neutral') {
@@ -42,7 +47,7 @@ var animationManager = (function () {
         bulletCount = bullets.length;
         for (i = 0; i < bulletCount; i++) {
             var bullet = bullets[i];
-            ctx.fillRect(bullet.x, bullet.y, bullet.model.width, bullet.model.height);
+            ctx.drawImage(bullet.model.model, 0, 0, 10, 30, bullet.x, bullet.y, bullet.model.width, bullet.model.height);
         }
     }
     function triggerExplosion(coordinateX, coordinateY, objectWidth, objectHeight) {
@@ -146,7 +151,7 @@ var animationManager = (function () {
                 fontSize: 200,
                 fontWeight: "bold",
                 fontFamily: "IrisUPC,Arial",
-                fill: "red",
+                fill: "green",
                 stroke: "white",
                 strokeWidth: 2
             }),
@@ -157,7 +162,7 @@ var animationManager = (function () {
                 fontSize: 70,
                 fontWeight: "bold",
                 fontFamily: "IrisUPC,Arial",
-                fill: "red",
+                fill: "green",
                 stroke: "white",
                 strokeWidth: 1
             });
@@ -167,15 +172,74 @@ var animationManager = (function () {
         stage.add(respawnLayer);
 
         window.addEventListener("click", onKeyPressed);
-        window.addEventListener("onMousedown", onKeyPressed);
+        window.addEventListener("keydown", onKeyPressed);
 
         function onKeyPressed() {
             respawnLayer.remove(text);
             respawnLayer.remove(startNew);
             stage.remove(respawnLayer);
+            gameStatusPaper.clear();
             window.removeEventListener("click", onKeyPressed);
             window.removeEventListener("keydown", onKeyPressed);
             callback();
+        }
+    }
+
+    function drawStatusWindow() {
+        var statusScreenContainer = document.getElementById("status-window");
+        if (!gameStatusPaper) {
+            gameStatusPaper = new Raphael(statusScreenContainer, canvas.width, canvas.height + 70);
+        }
+
+        player = GameEngine.getPlayer();
+        statusWindowBorder = gameStatusPaper.rect(5, canvas.height + 5, canvas.width - 10, 50)
+            .attr("fill", "#007DD1")
+            .attr("stroke", "#005AA1")
+            .attr("stroke-width", 10);
+
+        gameStatusPaper.text(50, canvas.height + 30, "Lives")
+            .attr("fill", "#EFFEFF")
+            .attr("font-size", 30);
+
+        gameStatusPaper.text(300, canvas.height + 30, "Hit Points")
+            .attr("fill", "#EFFEFF")
+            .attr("font-size", 30);
+
+        gameStatusPaper.text(600, canvas.height + 30, "Kills")
+            .attr("fill", "#EFFEFF")
+            .attr("font-size", 30);
+
+        livesDisplay = gameStatusPaper.text(100, canvas.height + 30, player.lives)
+            .attr("fill", "#EFFEFF")
+            .attr("font-size", 30);
+
+        hitPointsDisplay = gameStatusPaper.text(390, canvas.height + 30, player.plane.currentHitPoints)
+            .attr("fill", "#EFFEFF")
+            .attr("font-size", 30);
+
+        kills = gameStatusPaper.text(650, canvas.height + 30, player.kills)
+            .attr("fill", "#EFFEFF")
+            .attr("font-size", 30);
+
+
+        
+
+    }
+
+    function updateStatusWindow() {
+        player = GameEngine.getPlayer();
+
+        if (livesDisplay.attr("text") != player.lives) {
+            livesDisplay.attr("text", player.lives);
+        }
+
+        if (hitPointsDisplay.attr("text") != player.plane.currentHitPoints) {
+            hitPointsDisplay.attr("text", player.plane.currentHitPoints>0?player.plane.currentHitPoints:0);
+        }
+
+
+        if (kills.attr("text") != player.kills) {
+            kills.attr("text", player.kills);
         }
     }
 
@@ -198,12 +262,15 @@ var animationManager = (function () {
         drawPlane(player.plane);
         drawEnemies(enemies);
         drawBullets(bullets);
+        updateStatusWindow()
     }
 
     return {
         render: render,
         respawnPlayer: respawnPlayer,
         triggerExplosion: triggerExplosion,
-        gameOver: gameOver
-    };
+        gameOver: gameOver,
+        drawStatusWindow: drawStatusWindow,
+        updateStatusWindow: updateStatusWindow
+};
 }());

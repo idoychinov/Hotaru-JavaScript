@@ -5,20 +5,25 @@ var GameObject = (function () {
     'use strict';
     var sukhoi = new Image(), //142  / 98  / 98 /210
         f16 = new Image(),
+        classic = new Image(),
+        enemyBullet = new Image(),
     // Enumeration with the different bulletTypes. Fire riate lower == faster (less ticks needed to go out of cooldown)
-        bulletTypes = {
-            classic: { model: 'classic.png', speed: 10, damage: 15, width: 6,height: 12, rateOfFire:20 },
-            advanced: { model: 'classic.png', speed: 10, damage: 15, width: 10, height: 20, rateOfFire: 30 },
-            enemyBullet: { model: 'classic.png', speed: 5, damage: 15, width: 6, height: 12, rateOfFire:30 }
-        },
-        planeTypes = {
-            T50: { model: sukhoi, speed: 1, bulletType: bulletTypes.classic, width: 67, height: 105, hitPoints: 70 },
-            F16: { model: f16, speed: 1, bulletType: bulletTypes.classic, width: 67, height: 105, hitPoints:30 }
+    bulletTypes = {
+        classic: { model: classic, speed: 10, damage: 15, width: 10, height: 16, rateOfFire: 20 },
+        advanced: { model: classic, speed: 10, damage: 15, width: 10, height: 20, rateOfFire: 30 },
+        enemyBullet: { model: enemyBullet, speed: 5, damage: 15, width: 10, height: 16, rateOfFire: 30 }
+    },
+    planeTypes = {
+        T50: { model: sukhoi, speed: 1, bulletType: bulletTypes.classic, width: 67, height: 105, hitPoints: 70 },
+        F16: { model: f16, speed: 1, bulletType: bulletTypes.classic, width: 67, height: 105, hitPoints: 30 }
 
-        },
-        bulletDirections = { up: 'up', down: 'down' };
+    },
+    bulletDirections = { up: 'up', down: 'down' };
+
     sukhoi.src = "textures/sukhoi_sprite.png";
     f16.src = "textures/f16.png";
+    classic.src = 'textures/classic-bullet.png';
+    enemyBullet.src = 'textures/enemy-bullet.png';
 
     function GameObject(x, y, model) {
         // X and Y -> top left pixel for the image
@@ -71,7 +76,7 @@ var GameObject = (function () {
         this.fireBullet = function (direction) {
             var offsetY = 1;
             if (direction === bulletDirections.down) {
-                offsetY = this.model.height+1;
+                offsetY = this.model.height + 1;
             }
             var currentBullet = new Bullet(this.x + (this.model.width / 2) - (this.currentBulletType.width / 2), this.y + offsetY, this.currentBulletType, direction); //TODO DELTA Y FOR THE BULLET
             return currentBullet;
@@ -90,7 +95,7 @@ var GameObject = (function () {
 
     return {
         planesEnum: planeTypes,
-        bulletsEnum : bulletTypes,
+        bulletsEnum: bulletTypes,
         bulletDirectionsEnum: bulletDirections,
         Plane: Plane
     };
