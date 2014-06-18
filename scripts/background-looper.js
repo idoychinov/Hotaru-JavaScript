@@ -18,12 +18,20 @@ var BackgroundLooper = (function () {
     var loops = [
         new BackgroundLoop("water.png", "water-clouds.png",
             function (loops) {
-                if (loops == 3) return true; else return false;
+                if (loops == 4) return true; else return false;
             }
         ),
 
-        new BackgroundLoop("clouds.png", "transition2.png",
+        new BackgroundLoop("clouds.png", "clouds-water.png",
             function (loops) {
+                if (loops == 8) {
+                    return true;
+                } else return false;
+            }
+        ),
+
+        new BackgroundLoop("water.png", "water-clouds.png",
+            function () {
                 return false;
             }
         )
@@ -72,7 +80,7 @@ var BackgroundLooper = (function () {
         this.IMG_SRC_PREFIX = "textures/background/";
 
         this.isInTransition = false;
-        this.loopCount = 1;
+        this.loopCount = 0;
         this.index = 0;
         this.followingIndex = 0;
         this.loops = loops;
@@ -132,6 +140,7 @@ var BackgroundLooper = (function () {
         if (yOffset == -1) {
             yOffset = this.PATTERN_HEIGHT;
             this.loopCount++;
+            console.log(this.loopCount);
         }
 
         // Triggers a transition
@@ -162,6 +171,7 @@ var BackgroundLooper = (function () {
             this.pattern.fillPatternOffset({y: this.PATTERN_HEIGHT - FIELD_HEIGHT});
 
             this.loopCount++;
+            console.log(this.loopCount);
         }
         else if (transitionY == FIELD_HEIGHT) {
             this.isInTransition = false;
@@ -171,6 +181,7 @@ var BackgroundLooper = (function () {
             this.transition.setY(-FIELD_HEIGHT);
 
             this.loopCount++;
+            console.log(this.loopCount);
         }
     };
 
