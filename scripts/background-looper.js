@@ -4,7 +4,6 @@ var BackgroundLooper = (function () {
     /* GLOBAL CONSTANTS */
     var FIELD_WIDTH = 700;
     var FIELD_HEIGHT = 500;
-    var DEF_PATTERN_HEIGHT = 500;
     var isPaused = false;
     var playingField;
 
@@ -17,23 +16,22 @@ var BackgroundLooper = (function () {
 
     // Predefined loops
     var loops = [
-        new BackgroundLoop("pattern.png", "transition.png",
+        new BackgroundLoop("water.png", "water-clouds.png",
             function (loops) {
-                if (loops == 2) return true; else return false;
+                if (loops == 3) return true; else return false;
             }
         ),
 
-        new BackgroundLoop("pattern2.png", "transition2.png",
+        new BackgroundLoop("clouds.png", "transition2.png",
             function (loops) {
-                if (loops == 6) return true; else return false;
+                return false;
             }
         )
     ];
 
 
     /* static class KineticUtility */
-    function KineticUtility() {
-    };
+    function KineticUtility() {}
 
     /*
      * @returns: Image ready to be attached to layer
@@ -70,6 +68,7 @@ var BackgroundLooper = (function () {
 
     function LoopManager(loops, stage) {
         this.LOOP_SPEED = 10;
+        this.PATTERN_HEIGHT = 784;
         this.IMG_SRC_PREFIX = "textures/background/";
 
         this.isInTransition = false;
@@ -97,14 +96,14 @@ var BackgroundLooper = (function () {
             x: 0,
             y: 0,
             width: FIELD_WIDTH,
-            height: DEF_PATTERN_HEIGHT
+            height: this.PATTERN_HEIGHT
         };
 
         this.patternImg = KineticUtility.createImage(this.IMG_SRC_PREFIX + initial.patternSource, imageOptions);
         this.transitionImg = KineticUtility.createImage(this.IMG_SRC_PREFIX + initial.transitionSource, imageOptions);
 
-        this.pattern = this.generatePatternContainer(this.patternImg, 0);
-        this.transition = this.generatePatternContainer(this.transitionImg, -FIELD_HEIGHT);
+        this.pattern = this.generatePatternContainer(this.patternImg, 0, this.PATTERN_HEIGHT - FIELD_HEIGHT);
+        this.transition = this.generatePatternContainer(this.transitionImg, -FIELD_HEIGHT, 0);
 
         // Adding fields to the main layer
         this.layer.add(this.pattern);
@@ -115,14 +114,14 @@ var BackgroundLooper = (function () {
         this.stage.add(this.layer);
     };
 
-    LoopManager.prototype.generatePatternContainer = function (image, startPos) {
+    LoopManager.prototype.generatePatternContainer = function (image, startPos, yOffset) {
         return new Kinetic.Rect({
             x: 0,
             y: startPos,
             width: FIELD_WIDTH,
             height: FIELD_HEIGHT,
             fillPatternImage: image,
-            fillPatternOffset: {x: 0, y: FIELD_HEIGHT},
+            fillPatternOffset: {x: 0, y: yOffset}
         });
     };
 
@@ -131,7 +130,7 @@ var BackgroundLooper = (function () {
 
         // Resets the offset on loop
         if (yOffset == -1) {
-            yOffset = DEF_PATTERN_HEIGHT;
+            yOffset = this.PATTERN_HEIGHT;
             this.loopCount++;
         }
 
@@ -160,6 +159,7 @@ var BackgroundLooper = (function () {
 
             this.patternImg.src = this.IMG_SRC_PREFIX + this.loops[this.index].patternSource;
             this.pattern.setY(-FIELD_HEIGHT);
+            this.pattern.fillPatternOffset({y: this.PATTERN_HEIGHT - FIELD_HEIGHT});
 
             this.loopCount++;
         }
