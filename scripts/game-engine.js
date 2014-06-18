@@ -10,9 +10,9 @@ var GameEngine = (function () {
         animFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame,
         player,
         handle,
-        isPaused = false,
+        isPaused,
         movementDrections = { left: false, right: false, up: false, down: false },
-        playerIsShooting = false;
+        playerIsShooting;
 
 
     // FOR testing only, will be fixed after
@@ -191,13 +191,17 @@ var GameEngine = (function () {
                     if ((currentBullet.y <= currentEnemyPlane.y + currentEnemyPlane.model.height) &&
                         ((currentBullet.x + currentBullet.model.width >= currentEnemyPlane.x) &&
                         (currentBullet.x <= currentEnemyPlane.x + currentEnemyPlane.model.width))) {
+                        currentEnemyPlane.currentHitPoints -= currentBullet.model.damage;
                         bullets.splice(i, 1);
                         i--;
                         bulletListLength = bullets.length;
-                        animationManager.triggerExplosion(currentEnemyPlane.x, currentEnemyPlane.y, currentEnemyPlane.model.width, currentEnemyPlane.model.height);
-                        enemyPlanes.splice(j, 1);
-                        j--;
-                        enemyPlanesListLength = enemyPlanes.length;
+
+                        if (currentEnemyPlane.currentHitPoints <= 0) {
+                            animationManager.triggerExplosion(currentEnemyPlane.x, currentEnemyPlane.y, currentEnemyPlane.model.width, currentEnemyPlane.model.height);
+                            enemyPlanes.splice(j, 1);
+                            j--;
+                            enemyPlanesListLength = enemyPlanes.length;
+                        }
 
                         // TODO LOGIC FOR EXPLOSION
                     }
@@ -211,10 +215,7 @@ var GameEngine = (function () {
                     bulletListLength = bullets.length;
                     player.plane.currentHitPoints -= currentBullet.model.damage;
                     if (player.plane.currentHitPoints <= 0) {
-                        alert('hit');
-                        player.plane.isAlive = false; //TODO Maybe has to be changed with other game logic
-                        animationManager.triggerExplosion(player.plane.x, player.plane.y, player.plane.model.width, player.plane.model.height);
-                        player.plane.currentHitPoints = player.plane.model.hitPoints;
+                        playerPlaneDeath();
                     }
 
 
@@ -233,15 +234,29 @@ var GameEngine = (function () {
             if (collision) {
                 animationManager.triggerExplosion(currentEnemyPlane.x, currentEnemyPlane.y, currentEnemyPlane.model.width, currentEnemyPlane.model.height);
                 enemyPlanes.splice(i, 1);
-                player.plane.currentHitPoints -= player.plane.model.hitPoints/2;
+                player.plane.currentHitPoints -= player.plane.model.hitPoints / 2;
                 if (player.plane.currentHitPoints <= 0) {
-                    player.plane.isAlive = false; //TODO Maybe has to be changed with other game logic
-                    animationManager.triggerExplosion(player.plane.x, player.plane.y, player.plane.model.width, player.plane.model.height);
-                    player.plane.currentHitPoints = player.plane.model.hitPoints;
+                    playerPlaneDeath();
                 }
             }
         }
 
+        function playerPlaneDeath() {
+            player.plane.isAlive = false; 
+            animationManager.triggerExplosion(player.plane.x, player.plane.y, player.plane.model.width, player.plane.model.height);
+            player.plane.x = -200;
+            player.plane.y = -200;
+            player.lives -= 1;
+            if (player.lives <= 0) {
+                animationManager.gameOver(function () {
+                    GameEngine.init();
+                    BackgroundLooper.run();
+                });
+            }
+            else {
+                animationManager.respawnPlayer(function () { player.plane = new GameObject.Plane(300, 400, GameObject.planesEnum.T50); });
+            }
+        }
     }
 
     // Moving all of the enemy units. At this time only planes
@@ -292,7 +307,6 @@ var GameEngine = (function () {
         }
     }
 
-    // UNFINISHED
     function detectImminentCollisionBetweenEnemies(currentEnemy, enemyList, detectionDistance, indexToSkip) {
         var collisionLeft,
             collisionRight;
@@ -363,7 +377,15 @@ var GameEngine = (function () {
         return bullets;
     }
 
+    function clearAllStates() {
+        bullets = [];
+        enemyPlanes = [];
+        isPaused = false;
+        playerIsShooting = false;
+    }
+
     function init() {
+        clearAllStates();
         var playerPlane = new GameObject.Plane(300, 400, GameObject.planesEnum.T50);
         player = new playerModule.Player("Stamat", playerPlane);
         animFrame(gameLoop);
@@ -380,11 +402,9 @@ var GameEngine = (function () {
         if (!isPaused) {
             updatePlayerPlane();
             updateEnemyUnits();
-            //moveEnemyUnits();
             updateBullets();
             respawnEnemies();
             checkForCollision();
-            //checkForCollisions();
         }
     }
 

@@ -1,244 +1,209 @@
-/*global Kinetic */
-var renderer = (function () {
-    'use strict';
+﻿/*global Kinetic, GameEngine, GameObject, playerModule */
+/*jslint plusplus: true */
+/*jslint browser:true */
+var animationManager = (function () {
+    var canvas = document.getElementById('canvas'),
+        ctx = canvas.getContext('2d'),
+        player,
+        enemies,
+        bullets,
+        enemiesCount,
+        explosion,
+        stage = new Kinetic.Stage({
+            container: "kinetic-stage",
+            width: canvas.getAttribute("width"),
+            height: canvas.getAttribute("height"),
+        }),
+        layer = new Kinetic.Layer(),
+        imageObj = new Image(),
+        frameCount = 0;
 
-    var stage = new Kinetic.Stage({
-        container: "canvas",
-        width: 480,
-        height: 640
-    });
-
-    /* GLOBAL CONSTANTS */
-
-    var FIELD_WIDTH = 480;
-    var FIELD_HEIGHT = 640;
-
-    /*
-     * List of all elemenets and units that must be printed
-     */
-    var elementsToRender = [];
-
-    function enqueueForRendering(object) {
-        elementsToRender.push(object);
-    }
-
-    /* static class KineticUtility */
-    function KineticUtility() {
-    };
-
-    /*
-     * @returns: Image ready to be attached to layer
-     */
-    KineticUtility.createImage = function (source, imageOptions) {
-        var imageObject = new Image();
-
-        imageObject.onload = function () {
-            var image = new Kinetic.Image(imageOptions);
-
-            image.image = imageObject;
-        };
-
-        imageObject.src = source;
-
-        return imageObject;
-    };
-
-    /* } */
-
-
-    /* class Loop { */
-
-    function Loop(pattern, transition, transitionCondition) {
-        this.patternSource = pattern;
-        this.transitionSource = transition;
-        this.transitionCondition = transitionCondition;
-    }
-
-    /* } */
-
-
-    /* class LoopManager { */
-
-    function LoopManager(loops, stage) {
-        this.LOOP_SPEED = 10;
-
-        this.isInTransition = false;
-        this.loopCount = 1;
-        this.index = 0;
-        this.followingIndex = 0;
-
-        this.loops = loops;
-        this.stage = stage;
-
-        this.pattern;
-        this.transition;
-        this.patternImg;
-        this.transitionImg;
-        this.layer = new Kinetic.Layer();
-
-        // Initializing the field
-        this.initializeFields();
-        this.drawStage(stage);
-    }
-
-    LoopManager.prototype.initializeFields = function () {
-        var initial = this.loops[0];
-        var imageOptions = {
-            x: 0,
-            y: 0,
-            width: FIELD_WIDTH,
-            height: FIELD_HEIGHT
-        };
-
-        this.patternImg = KineticUtility.createImage(initial.patternSource, imageOptions);
-        this.transitionImg = KineticUtility.createImage(initial.transitionSource, imageOptions);
-
-        this.pattern = this.generatePatternContainer(this.patternImg, 0);
-        this.transition = this.generatePatternContainer(this.transitionImg, -FIELD_HEIGHT);
-
-        // Adding fields to the main layer
-        this.layer.add(this.pattern);
-        this.layer.add(this.transition);
-    };
-
-    LoopManager.prototype.drawStage = function (stage) {
-        /*****************************/
-
-        for (var i = 0; i < elementsToRender.length; i++) {
-            var obj = elementsToRender[i];
-            var rect = new Kinetic.Rect({
-                x: obj.x + 5,
-                y: obj.y + 5,
-                width: 100,
-                height: 50,
-                fill: 'green',
-                stroke: 'black',
-                strokeWidth: 4
-            });
-            this.layer.add(rect);
-        }
-
-        stage.add(this.layer);
-
-        /*****************************/
-        stage.add(this.layer);
-    };
-
-    LoopManager.prototype.generatePatternContainer = function (image, startPos) {
-        return new Kinetic.Rect({
-            x: 0,
-            y: startPos,
-            width: FIELD_WIDTH,
-            height: FIELD_HEIGHT,
-            fillPatternImage: image,
-            fillPatternOffset: { x: 0, y: FIELD_HEIGHT }
-        });
-    };
-
-    LoopManager.prototype.executeLooping = function () {
-        var yOffset = this.pattern.attrs.fillPatternOffsetY - 1;
-
-        // Resets the offset on loop
-        if (yOffset == -1) {
-            yOffset = FIELD_HEIGHT;
-            this.loopCount++;
-        }
-
-        // Triggers a transition
-        if (this.loops[this.index].transitionCondition(this.loopCount)) {
-            this.isInTransition = true;
-        }
-
-        this.pattern.fillPatternOffset({ y: yOffset });
-    };
-
-    LoopManager.prototype.executeTransition = function () {
-        var patternY = this.pattern.attrs.y + 1,
-            transitionY = this.transition.attrs.y + 1;
-
-        this.pattern.setY(patternY);
-        this.transition.setY(transitionY);
-
-        if (patternY == FIELD_HEIGHT) {
-            this.index++;
-
-            // In case all loops were executed - stop the movement.
-            if (this.index > this.loops.length - 1) {
-                return true;
-            }
-
-            this.patternImg.src = this.loops[this.index].patternSource;
-            this.pattern.setY(-FIELD_HEIGHT);
-
-            this.loopCount++;
-        }
-        else if (transitionY == FIELD_HEIGHT) {
-            this.isInTransition = false;
-            this.followingIndex++;
-
-            this.transitionImg.src = this.loops[this.followingIndex].transitionSource;
-            this.transition.setY(-FIELD_HEIGHT);
-
-            this.loopCount++;
-        }
-    };
-
-    LoopManager.prototype.startMovement = function () {
-        if (!this.isInTransition) {
-            this.executeLooping();
+    function drawPlane(plane) {
+        if (plane.steeringDirection == 'neutral') {
+            ctx.drawImage(plane.model.model, 0, 0, 142, 210, plane.x, plane.y, plane.model.width, plane.model.height);
+        } else if (plane.steeringDirection == 'left') {
+            ctx.drawImage(plane.model.model, 142, 0, 142, 210, plane.x, plane.y, plane.model.width, plane.model.height);
+        } else if (plane.steeringDirection == 'right') {
+            ctx.drawImage(plane.model.model, 284, 0, 142, 210, plane.x, plane.y, plane.model.width, plane.model.height);
         } else {
-            var isLast = this.executeTransition();
-
-            if (isLast) return;
+            console.error("Unrecognized steeringDirection", plane.steeringDirection)
         }
+    }
 
-        this.layer.batchDraw();
+    function drawEnemies() {
+        enemiesCount = enemies.length;
+        for (i = 0; i < enemiesCount; i++) {
+            var enemy = enemies[i];
+            ctx.drawImage(enemy.model.model, enemy.x, enemy.y, enemy.model.width, enemy.model.height);
+        }
+    }
 
-        var self = this;
-        setTimeout(function () {
-            self.startMovement();
-        }, this.LOOP_SPEED);
-    };
+    function drawBullets() {
+        bulletCount = bullets.length;
+        for (i = 0; i < bulletCount; i++) {
+            var bullet = bullets[i];
+            ctx.fillRect(bullet.x, bullet.y, bullet.model.width, bullet.model.height);
+        }
+    }
+    function triggerExplosion(coordinateX, coordinateY, objectWidth, objectHeight) {
 
-    /* } */
 
-    // PREVIEW
+        imageObj.src = "textures/explosion-sprite.png";
 
-    var loops = [
-        new Loop("pattern.png", "transition.png",
-            function (loops) {
-                if (loops == 2) {
-                    return true;
-                }
+        frameCount = 0;
+        explosion = new Kinetic.Sprite({
+            x: coordinateX,
+            y: coordinateY,
+            width: objectWidth,
+            height: objectHeight,
+            image: imageObj,
+            animation: 'explode',
+            animations: {
+                explode: [
+                    0, 0, 65, 65,
+                    65, 0, 65, 65,
+                    130, 0, 65, 65,
+                    195, 0, 65, 65,
+                    0, 65, 65, 65,
+                    65, 65, 65, 65,
+                    130, 65, 65, 65,
+                    195, 65, 65, 65,
+                    0, 130, 65, 65,
+                    65, 130, 65, 65,
+                    130, 130, 65, 65,
+                    195, 130, 65, 65,
+                    0, 195, 65, 65,
+                    65, 195, 65, 65,
+                    130, 195, 65, 65,
+                    195, 195, 65, 65,
+                ]
+            },
+            frameRate: 7,
+            frameIndex: 0
+        });
 
-                return false;
+        function onFrameIndexChange() {
+            frameCount++;
+            if (frameCount >= 8) {
+                this.stop();
+                frameCount = 0;
+                layer.remove(this);
+                this.destroy();
             }
-        ),
+        }
+        explosion.on("frameIndexChange", onFrameIndexChange)
+        layer.add(explosion);
+        stage.add(layer);
+        explosion.start();
+    }
 
-        new Loop("pattern2.png", "transition2.png",
-            function (loops) {
-                if (loops == 6) {
-                    return true;
-                }
+    function respawnPlayer(callback) {
+        var respawnLayer = new Kinetic.Layer(),
+            interval,
+            secondsToRespawn = 3,
+            respawnText = "Respawn in ",
+            text = new Kinetic.Text({
+                x: 100,
+                y: 200,
+                text: respawnText + secondsToRespawn,
+                fontSize: 120,
+                fontWeight: "bold",
+                fontFamily: "IrisUPC,Arial",
+                fill: "green",
+                stroke: "white",
+                strokeWidth: 2
+            });
 
-                return false;
+        respawnLayer.add(text);
+        stage.add(respawnLayer);
+        interval = setInterval(countDown, 1000);
+
+        function countDown() {
+            secondsToRespawn--;
+            respawnLayer.remove(text);
+            stage.remove(respawnLayer);
+            text.setText(respawnText + secondsToRespawn);
+            respawnLayer.add(text);
+            stage.add(respawnLayer);
+
+            if (secondsToRespawn <= 0) {
+                clearInterval(interval);
+                respawnLayer.remove(text);
+                stage.remove(respawnLayer);
+                callback();
             }
-        )
-    ];
+        }
 
-    function start() {
-        try {
-            var playingField = new LoopManager(loops, stage);
-            playingField.startMovement();
+    }
+
+    function gameOver(callback) {
+        var respawnLayer = new Kinetic.Layer(),
+            respawnText = "Respawn in ",
+            text = new Kinetic.Text({
+                x: 10,
+                y: 100,
+                text: "Game Over",
+                fontSize: 200,
+                fontWeight: "bold",
+                fontFamily: "IrisUPC,Arial",
+                fill: "red",
+                stroke: "white",
+                strokeWidth: 2
+            }),
+            startNew = new Kinetic.Text({
+                x: 30,
+                y: 250,
+                text: "Press any key to start new game",
+                fontSize: 70,
+                fontWeight: "bold",
+                fontFamily: "IrisUPC,Arial",
+                fill: "red",
+                stroke: "white",
+                strokeWidth: 1
+            });
+
+        respawnLayer.add(text);
+        respawnLayer.add(startNew);
+        stage.add(respawnLayer);
+
+        window.addEventListener("click", onKeyPressed);
+        window.addEventListener("onMousedown", onKeyPressed);
+
+        function onKeyPressed() {
+            respawnLayer.remove(text);
+            respawnLayer.remove(startNew);
+            stage.remove(respawnLayer);
+            window.removeEventListener("click", onKeyPressed);
+            window.removeEventListener("keydown", onKeyPressed);
+            callback();
         }
-        catch (error) {
-            console.log(error);
-            console.trace();
-        }
+    }
+
+    function render() {
+        /*
+         * @changes:
+         * - add clearRect on every frame (avoiding image repetition)
+         * - changed canvas background to transparent
+         */
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        //ctx.fillStyle = "#001000";
+        //ctx.fillRect(0, 0, canvas.width, canvas.height);
+        //ctx.font = "18px Arial";
+        //ctx.fillStyle = "red";
+        //displayMessage = 'Score : ' + score.toString() + ", Level : " + level;
+        //ctx.fillText(displayMessage, 10, canvas.height - 10);
+        player = GameEngine.getPlayer();
+        enemies = GameEngine.getEnemies();
+        bullets = GameEngine.getBullets();
+        drawPlane(player.plane);
+        drawEnemies(enemies);
+        drawBullets(bullets);
     }
 
     return {
-        init: start,
-        enqueueForRendering: enqueueForRendering
+        render: render,
+        respawnPlayer: respawnPlayer,
+        triggerExplosion: triggerExplosion,
+        gameOver: gameOver
     };
 }());
