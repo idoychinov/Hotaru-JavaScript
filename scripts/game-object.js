@@ -7,24 +7,24 @@ var GameObject = (function () {
         sukhoi = new Image(), //142  / 98  / 98 /210
         f16 = new Image(),
         mgProjectile = new Image(),
+        enemyProjectile = new Image(),
         missile = new Image(),
 
     // Enumeration with the different bulletTypes. Fire riate lower == faster (less ticks needed to go out of cooldown)
         bulletTypes = {
-            classic: { model: mgProjectile, speed: 10, damage: 15, width: 6,height: 12, rateOfFire:20 },
-            advanced: { model: missile, speed: 5, damage: 15, width: 7, height: 34, rateOfFire: 40 },
-            enemyBullet: { model: mgProjectile, speed: 5, damage: 15, width: 6, height: 12, rateOfFire:30 }
+            classic: { model: mgProjectile, speed: 8, damage: 15, width: 10, height: 16, rateOfFire: 20 },
+            advanced: { model: missile, speed: 12, damage: 50, width: 16, height: 40, rateOfFire: 100 },
+            enemyBullet: { model: enemyProjectile, speed: 5, damage: 15, width: 10, height: 16, rateOfFire: 30 }
         },
         planeTypes = {
             T50: { model: sukhoi, speed: 1, bulletType: bulletTypes.classic, width: 65, height: 96, hitPoints: 70 },
             F16: { model: f16, speed: 1, bulletType: bulletTypes.classic, width: 64, height: 96, hitPoints: 40 }
-    },
+        },
     bulletDirections = { up: 'up', down: 'down' };
 
-    classic.src = 'textures/classic-bullet.png';
-    enemyBullet.src = 'textures/enemy-bullet.png';
 
     mgProjectile.src = IMG_DIR_PREFIX + "mg_projectile.png";
+    enemyProjectile.src = IMG_DIR_PREFIX + "enemy_projectile.png";
     missile.src = IMG_DIR_PREFIX + "missile.png";
     sukhoi.src = IMG_DIR_PREFIX + "sukhoi_sprite.png";
     f16.src = IMG_DIR_PREFIX + "f16.png";
@@ -76,13 +76,16 @@ var GameObject = (function () {
     function Plane(x, y, planeModel) {
         Unit.call(this, x, y, planeModel);
         this.shotCooldown = 0;
+        this.missleCooldown = 0;
+        this.missiles = 5;
         this.currentBulletType = planeModel.bulletType;
-        this.fireBullet = function (direction) {
-            var offsetY = 1;
+        this.fireBullet = function (direction, isMissle) {
+            var offsetY = 1,
+                type = isMissle ? bulletTypes.advanced : this.currentBulletType;
             if (direction === bulletDirections.down) {
                 offsetY = this.model.height + 1;
             }
-            var currentBullet = new Bullet(this.x + (this.model.width / 2) - (this.currentBulletType.width / 2), this.y + offsetY, this.currentBulletType, direction); //TODO DELTA Y FOR THE BULLET
+            var currentBullet = new Bullet(this.x + (this.model.width / 2) - (type.width / 2), this.y + offsetY, type, direction); //TODO DELTA Y FOR THE BULLET
             return currentBullet;
         };
     }

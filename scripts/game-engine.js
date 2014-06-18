@@ -12,7 +12,8 @@ var GameEngine = (function () {
         handle,
         isPaused,
         movementDrections = { left: false, right: false, up: false, down: false },
-        playerIsShooting;
+        playerIsShooting,
+        isFiringMissle;
 
 
     // FOR testing only, will be fixed after
@@ -92,13 +93,12 @@ var GameEngine = (function () {
         if (!isPaused) {
             //console.log('fail');
             switch (e.keyCode) {
-                // Space -> shoot TODO
                 case 32:
                     playerIsShooting = true;
                     break;
-                    // Ctrl -> special (bomb limited uses) TODO
+                    // Ctrl -> special (missiles limited uses);
                 case 17:
-
+                    isFiringMissle = true;
                     break;
                 case 37:
                     movementDrections.left = true;
@@ -122,6 +122,9 @@ var GameEngine = (function () {
 
     document.body.addEventListener("keyup", function (e) {
         switch (e.keyCode) {
+            case 17:
+                isFiringMissle = false;
+                break;
             case 32:
                 playerIsShooting = false;
                 break;
@@ -244,7 +247,7 @@ var GameEngine = (function () {
         }
 
         function playerPlaneDeath() {
-            player.plane.isAlive = false; 
+            player.plane.isAlive = false;
             animationManager.triggerExplosion(player.plane.x, player.plane.y, player.plane.model.width, player.plane.model.height);
             player.plane.x = -200;
             player.plane.y = -200;
@@ -359,11 +362,20 @@ var GameEngine = (function () {
         if (player.plane.shotCooldown > 0) {
             player.plane.shotCooldown--;
         }
-        if (playerIsShooting && player.plane.shotCooldown == 0) {
+        if (player.plane.missleCooldown > 0) {
+            player.plane.missleCooldown--;
+        }
+        if (playerIsShooting && player.plane.shotCooldown == 0 ) {
             bullets.push(player.plane.fireBullet(GameObject.bulletDirectionsEnum.up));
             player.plane.shotCooldown = player.plane.currentBulletType.rateOfFire;
         }
+        
+        if (isFiringMissle && player.plane.missleCooldown == 0 && player.plane.missiles > 0) {
+            bullets.push(player.plane.fireBullet(GameObject.bulletDirectionsEnum.up, true));
+            player.plane.missleCooldown = GameObject.bulletsEnum.advanced.rateOfFire;
+        }
 
+       
 
     }
 
@@ -384,6 +396,7 @@ var GameEngine = (function () {
         enemyPlanes = [];
         isPaused = false;
         playerIsShooting = false;
+        isFiringMissle = false;
     }
 
     function init() {

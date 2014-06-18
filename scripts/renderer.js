@@ -21,7 +21,8 @@ var animationManager = (function () {
         hitPointsDisplay,
         kills,
         statusWindowBorder,
-        gameStatusPaper;
+        gameStatusPaper,
+        misslesCount;
 
     function drawPlane(plane) {
         if (plane.steeringDirection == 'neutral') {
@@ -201,7 +202,11 @@ var animationManager = (function () {
             .attr("fill", "#EFFEFF")
             .attr("font-size", 30);
 
-        gameStatusPaper.text(300, canvas.height + 30, "Hit Points")
+        gameStatusPaper.text(200, canvas.height + 30, "Hit Points")
+            .attr("fill", "#EFFEFF")
+            .attr("font-size", 30);
+
+        gameStatusPaper.text(400, canvas.height + 30, "Missles")
             .attr("fill", "#EFFEFF")
             .attr("font-size", 30);
 
@@ -213,7 +218,11 @@ var animationManager = (function () {
             .attr("fill", "#EFFEFF")
             .attr("font-size", 30);
 
-        hitPointsDisplay = gameStatusPaper.text(390, canvas.height + 30, player.plane.currentHitPoints)
+        hitPointsDisplay = gameStatusPaper.text(290, canvas.height + 30, player.plane.currentHitPoints)
+            .attr("fill", "#EFFEFF")
+            .attr("font-size", 30);
+
+        misslesCount = gameStatusPaper.text(470, canvas.height + 30, player.plane.missiles)
             .attr("fill", "#EFFEFF")
             .attr("font-size", 30);
 
@@ -222,7 +231,7 @@ var animationManager = (function () {
             .attr("font-size", 30);
 
 
-        
+
 
     }
 
@@ -234,7 +243,7 @@ var animationManager = (function () {
         }
 
         if (hitPointsDisplay.attr("text") != player.plane.currentHitPoints) {
-            hitPointsDisplay.attr("text", player.plane.currentHitPoints>0?player.plane.currentHitPoints:0);
+            hitPointsDisplay.attr("text", player.plane.currentHitPoints > 0 ? player.plane.currentHitPoints : 0);
         }
 
 
@@ -272,5 +281,5 @@ var animationManager = (function () {
         gameOver: gameOver,
         drawStatusWindow: drawStatusWindow,
         updateStatusWindow: updateStatusWindow
-};
+    };
 }());
