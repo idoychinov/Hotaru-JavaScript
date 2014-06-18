@@ -246,6 +246,9 @@ var animationManager = (function () {
             hitPointsDisplay.attr("text", player.plane.currentHitPoints > 0 ? player.plane.currentHitPoints : 0);
         }
 
+        if (misslesCount.attr("text") != player.plane.missiles) {
+            misslesCount.attr("text", player.plane.missiles > 0 ? player.plane.missiles : 0);
+        }
 
         if (kills.attr("text") != player.kills) {
             kills.attr("text", player.kills);

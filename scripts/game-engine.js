@@ -371,6 +371,7 @@ var GameEngine = (function () {
         }
         
         if (isFiringMissle && player.plane.missleCooldown == 0 && player.plane.missiles > 0) {
+            player.plane.missiles--;
             bullets.push(player.plane.fireBullet(GameObject.bulletDirectionsEnum.up, true));
             player.plane.missleCooldown = GameObject.bulletsEnum.advanced.rateOfFire;
         }
