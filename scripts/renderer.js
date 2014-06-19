@@ -22,7 +22,11 @@ var animationManager = (function () {
         kills,
         statusWindowBorder,
         gameStatusPaper,
-        misslesCount;
+        misslesCount,
+        pauseLayer = new Kinetic.Layer(),
+        respawnLayer,
+        pauseText,
+        pauseContinueText;
 
     function drawPlane(plane) {
         if (plane.steeringDirection == 'neutral') {
@@ -101,6 +105,42 @@ var animationManager = (function () {
         layer.add(explosion);
         stage.add(layer);
         explosion.start();
+    }
+
+    function pauseDraw() {
+                pauseText = new Kinetic.Text({
+                        x: 30,
+                        y: 100,
+                        text: "Game Paused",
+                        fontSize: 160,
+                        fontWeight: "bold",
+                        fontFamily: "IrisUPC,Arial",
+                        fill: "green",
+                        stroke: "white",
+                        strokeWidth: 2
+                    });
+                pauseContinueText = new Kinetic.Text({
+                        x: 100,
+                        y: 250,
+                        text: "Press ESC key to continue",
+                        fontSize: 70,
+                        fontWeight: "bold",
+                        fontFamily: "IrisUPC,Arial",
+                        fill: "green",
+                        stroke: "white",
+                        strokeWidth: 1
+                    });
+
+        pauseLayer.add(pauseText);
+        pauseLayer.add(pauseContinueText);
+        stage.add(pauseLayer);
+    }
+
+    function gameUnpause(){
+        pauseLayer.remove(pauseText);
+        pauseLayer.remove(pauseContinueText);
+        stage.remove(pauseLayer);
+
     }
 
     function respawnPlayer(callback) {
@@ -239,14 +279,30 @@ var animationManager = (function () {
         player = GameEngine.getPlayer();
 
         if (livesDisplay.attr("text") != player.lives) {
+            if(player.lives<=1){
+                livesDisplay.attr("fill","red");
+            } else {
+                livesDisplay.attr("fill","EFFEFF");
+            }
+
             livesDisplay.attr("text", player.lives);
         }
 
         if (hitPointsDisplay.attr("text") != player.plane.currentHitPoints) {
+            if(player.plane.currentHitPoints<=(player.plane.model.hitPoints*0.3)){
+                hitPointsDisplay.attr("fill","red");
+            } else {
+                hitPointsDisplay.attr("fill","EFFEFF");
+            }
             hitPointsDisplay.attr("text", player.plane.currentHitPoints > 0 ? player.plane.currentHitPoints : 0);
         }
 
         if (misslesCount.attr("text") != player.plane.missiles) {
+            if(player.plane.missiles<=2){
+                misslesCount.attr("fill","red");
+            } else {
+                misslesCount.attr("fill","EFFEFF");
+            }
             misslesCount.attr("text", player.plane.missiles > 0 ? player.plane.missiles : 0);
         }
 
@@ -283,6 +339,8 @@ var animationManager = (function () {
         triggerExplosion: triggerExplosion,
         gameOver: gameOver,
         drawStatusWindow: drawStatusWindow,
-        updateStatusWindow: updateStatusWindow
+        updateStatusWindow: updateStatusWindow,
+        pauseDraw : pauseDraw,
+        gameUnpause: gameUnpause
     };
 }());

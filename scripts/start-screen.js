@@ -83,6 +83,7 @@ var StartScreen = (function () {
             window.removeEventListener("click", startGame);
             startButton.stop();
             paper.remove();
+            document.getElementById('status-window').focus();
             GameEngine.init();
             BackgroundLooper.run();
         }

@@ -11,6 +11,7 @@ var GameEngine = (function () {
         player,
         handle,
         isPaused,
+        previousPauseState,
         movementDrections = { left: false, right: false, up: false, down: false },
         playerIsShooting,
         isFiringMissle;
@@ -101,18 +102,22 @@ var GameEngine = (function () {
                     isFiringMissle = true;
                     break;
                 case 37:
+                    e.preventDefault();
                     movementDrections.left = true;
                     performMovement();
                     break;
                 case 38:
+                    e.preventDefault();
                     movementDrections.up = true;
                     performMovement();
                     break;
                 case 39:
+                    e.preventDefault();
                     movementDrections.right = true;
                     performMovement();
                     break;
                 case 40:
+                    e.preventDefault();
                     movementDrections.down = true;
                     performMovement();
                     break;
@@ -398,6 +403,7 @@ var GameEngine = (function () {
         isPaused = false;
         playerIsShooting = false;
         isFiringMissle = false;
+        previousPauseState= false;
     }
 
     function init() {
@@ -416,7 +422,15 @@ var GameEngine = (function () {
     }
 
     function update() {
+        if(isPaused && isPaused !=previousPauseState){
+            previousPauseState=isPaused;
+            animationManager.pauseDraw();
+        }
         if (!isPaused) {
+            if(isPaused!=previousPauseState){
+                previousPauseState=isPaused;
+                animationManager.gameUnpause();
+            }
             updatePlayerPlane();
             updateEnemyUnits();
             updateBullets();
