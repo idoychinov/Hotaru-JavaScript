@@ -48,7 +48,7 @@ var animationManager = (function () {
         bulletCount = bullets.length;
         for (i = 0; i < bulletCount; i++) {
             var bullet = bullets[i];
-            ctx.drawImage(bullet.model.model, 0, 0, 10, 30, bullet.x, bullet.y, bullet.model.width, bullet.model.height);
+            ctx.drawImage(bullet.model.model, bullet.x, bullet.y, bullet.model.width, bullet.model.height);
         }
     }
     function triggerExplosion(coordinateX, coordinateY, objectWidth, objectHeight) {
