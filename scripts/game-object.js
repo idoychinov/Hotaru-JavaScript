@@ -13,7 +13,7 @@ var GameObject = (function () {
     // Enumeration with the different bulletTypes. Fire riate lower == faster (less ticks needed to go out of cooldown)
         bulletTypes = {
             classic: { model: mgProjectile, speed: 8, damage: 15, width: 10, height: 16, rateOfFire: 20 },
-            advanced: { model: missile, speed: 12, damage: 50, width: 14, height: 40, rateOfFire: 100 },
+            advanced: { model: missile, speed: 11, damage: 50, width: 10, height: 49, rateOfFire: 100 },
             enemyBullet: { model: enemyProjectile, speed: 5, damage: 15, width: 10, height: 16, rateOfFire: 30 }
         },
         planeTypes = {
